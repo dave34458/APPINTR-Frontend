@@ -7,14 +7,15 @@ API_BASE_URL = 'http://127.0.0.1:8000/api'
 
 
 def index(request):
-    token = request.session.get('auth_token')  # Get token from session
-    is_authenticated = bool(token)  # If token exists, user is authenticated
+    token = request.session.get('auth_token')
     headers = {'Authorization': f'Token {token}'} if token else {}
-    response = requests.get(f"{API_BASE_URL}/books", headers=headers)
-    books = response.json() if response.status_code == 200 else []
 
-    # Pass the token to the template for display (for testing purposes)
-    return render(request, 'library/index.html', {'books': books, 'is_authenticated': is_authenticated, 'token': token})
+    books = requests.get(f"{API_BASE_URL}/books", headers=headers).json() or []
+    available_books = {b['id'] for b in requests.get(f"{API_BASE_URL}/books/available", headers=headers).json() or []}
+
+    return render(request, 'library/index.html',
+                  {'books': [{**b, 'is_available': b['id'] in available_books} for b in books],
+                   'is_authenticated': bool(token), 'token': token})
 
 
 def login(request):

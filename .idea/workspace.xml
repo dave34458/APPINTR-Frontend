@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="login.html">
+    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="added login">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/templates/library/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/templates/library/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,21 +42,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Django Server.Frontend.executor": "Run",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Django Server.Frontend.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Frontend" type="Python.DjangoServer" factoryName="Django server">
       <module name="Frontend" />
@@ -104,7 +102,8 @@
       <updated>1744266450923</updated>
       <workItem from="1744266452080" duration="2543000" />
       <workItem from="1744280254739" duration="3558000" />
-      <workItem from="1744299832656" duration="11254000" />
+      <workItem from="1744299832656" duration="11276000" />
+      <workItem from="1744313476220" duration="11547000" />
     </task>
     <task id="LOCAL-00001" summary="first">
       <option name="closed" value="true" />
@@ -154,7 +153,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744304325493</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="added login">
+      <option name="closed" value="true" />
+      <created>1744311767562</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1744311767562</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,6 +171,7 @@
     <MESSAGE value="first" />
     <MESSAGE value="fix the navbar man" />
     <MESSAGE value="login.html" />
-    <option name="LAST_COMMIT_MESSAGE" value="login.html" />
+    <MESSAGE value="added login" />
+    <option name="LAST_COMMIT_MESSAGE" value="added login" />
   </component>
 </project>
