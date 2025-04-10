@@ -9,14 +9,17 @@ API_BASE_URL = 'http://127.0.0.1:8000/api'
 def index(request):
     token = request.session.get('auth_token')
     headers = {'Authorization': f'Token {token}'} if token else {}
-
+    search_query = request.GET.get('title', '').strip()
     books = requests.get(f"{API_BASE_URL}/books", headers=headers).json() or []
+    if search_query:
+        books = [book for book in books if search_query.lower() in book['title'].lower()]
     available_books = {b['id'] for b in requests.get(f"{API_BASE_URL}/books/available", headers=headers).json() or []}
-
-    return render(request, 'library/index.html',
-                  {'books': [{**b, 'is_available': b['id'] in available_books} for b in books],
-                   'is_authenticated': bool(token), 'token': token})
-
+    return render(request, 'library/index.html', {
+        'books': [{**b, 'is_available': b['id'] in available_books} for b in books],
+        'is_authenticated': bool(token),
+        'token': token,
+        'search_query': search_query  # Pass the search query to the template
+    })
 
 def login(request):
     if request.method == 'POST':

@@ -21,6 +21,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('library/', include('library.urls')),  # Include the library app's URLs
-    path('', lambda request: redirect('library/index/', permanent=False)),
 ]
+
+APPEND_SLASH = False
 
