@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="fix the navbar man">
-      <change afterPath="$PROJECT_DIR$/library/templates/library/login.html" afterDir="false" />
+    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="login.html">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/static/script1.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/static/script2.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/static/script3.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/static/script4.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/static/script5.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/static/styles1.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/templates/library/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/templates/library/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/views.py" afterDir="false" />
     </list>
@@ -107,7 +104,7 @@
       <updated>1744266450923</updated>
       <workItem from="1744266452080" duration="2543000" />
       <workItem from="1744280254739" duration="3558000" />
-      <workItem from="1744299832656" duration="4354000" />
+      <workItem from="1744299832656" duration="11254000" />
     </task>
     <task id="LOCAL-00001" summary="first">
       <option name="closed" value="true" />
@@ -149,7 +146,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744301822998</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="login.html">
+      <option name="closed" value="true" />
+      <created>1744304325493</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744304325493</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -158,6 +163,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first" />
     <MESSAGE value="fix the navbar man" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix the navbar man" />
+    <MESSAGE value="login.html" />
+    <option name="LAST_COMMIT_MESSAGE" value="login.html" />
   </component>
 </project>

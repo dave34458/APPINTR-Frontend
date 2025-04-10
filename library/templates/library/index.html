@@ -69,7 +69,6 @@
            alt=""
            class="logo">
     </a>
-
     <!-- Navigation Menu -->
     <nav role="navigation" class="nav-menu w-nav-menu">
 
@@ -110,14 +109,20 @@
         <div>News</div>
       </a>
 
-      <a href="Contact/contact.html"
-         class="navlink w-inline-block">
-        <img src="https://cdn.prod.website-files.com/67dbed726dc9ce53f2292560/67dbed726dc9ce53f22925e4_Message.svg"
-             width="22"
-             alt=""
-             class="icon">
-        <div>Ask a question</div>
-      </a>
+{% if is_authenticated %}
+    <!-- Display content for authenticated users -->
+    <a href="{% url 'library:logout' %}" class="navlink w-inline-block">
+        <img src="https://cdn.prod.website-files.com/67dbed726dc9ce53f2292560/67dbed726dc9ce53f22925e4_Message.svg" width="22" alt="" class="icon">
+        <div>Logout</div>
+    </a>
+{% else %}
+    <!-- Display content for non-authenticated users -->
+    <a href="{% url 'library:login' %}" class="navlink w-inline-block">
+        <img src="https://cdn.prod.website-files.com/67dbed726dc9ce53f2292560/67dbed726dc9ce53f22925e4_Message.svg" width="22" alt="" class="icon">
+        <div>Login</div>
+    </a>
+{% endif %}
+
 
     </nav>
 

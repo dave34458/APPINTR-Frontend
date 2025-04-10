@@ -5,14 +5,64 @@ from django.conf import settings
 
 API_BASE_URL = 'http://127.0.0.1:8000/api'
 
+
 def index(request):
-    response = requests.get(f"{API_BASE_URL}/books")
-    if response.status_code == 200: books = response.json()
-    else: books = []
-    return render(request, 'library/index.html', {'books': books})
+    token = request.session.get('auth_token')  # Get token from session
+    is_authenticated = bool(token)  # If token exists, user is authenticated
+    headers = {'Authorization': f'Token {token}'} if token else {}
+    response = requests.get(f"{API_BASE_URL}/books", headers=headers)
+    books = response.json() if response.status_code == 200 else []
+
+    # Pass the token to the template for display (for testing purposes)
+    return render(request, 'library/index.html', {'books': books, 'is_authenticated': is_authenticated, 'token': token})
+
 
 def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        response = requests.post(f"{API_BASE_URL}/auth/sessions", data={
+            'username': username,
+            'password': password,
+        })
+        if response.status_code == 200:
+            token = response.json().get('token')
+            if token:
+                request.session['auth_token'] = token  # Store token in session
+                return redirect('library:index')
+            else:
+                return render(request, 'library/login.html', {'error': 'Token missing'})
+        return render(request, 'library/login.html', {'error': 'Invalid credentials'})
     return render(request, 'library/login.html')
+
+def register(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        response = requests.post(f"{API_BASE_URL}/auth/users", data={
+            'username': username,
+            'email': email,
+            'password': password,
+        })
+        if response.status_code == 201:
+            return redirect('library:index')
+        else:
+            # Handle error
+            return render(request, 'library/login.html', {'error': 'Registration failed'})
+
+def logout(request):
+    token = request.headers.get('Authorization') or request.session.get('auth_token')
+    if not token:
+        return redirect('library:index')
+    headers = {'Authorization': f'Token {token}'}
+    response = requests.delete(f"http://127.0.0.1:8000/api/auth/logout", headers=headers)
+    if response.status_code == 204:
+        request.session.flush()
+        return redirect('library:index')
+    else:
+        return redirect('library:index')
+
 
 def book_detail(request, book_id):
     return render(request, 'frontend/book_detail.html', {'book': requests.get(f"{API_BASE_URL}/books/{book_id}/").json()} if requests.get(f"{API_BASE_URL}/books/{book_id}/").status_code == 200 else JsonResponse({'error': 'Failed to fetch book'}, status=500))
