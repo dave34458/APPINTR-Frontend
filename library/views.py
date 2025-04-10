@@ -5,12 +5,14 @@ from django.conf import settings
 
 API_BASE_URL = 'http://127.0.0.1:8000/api'
 
-
 def index(request):
     response = requests.get(f"{API_BASE_URL}/books")
     if response.status_code == 200: books = response.json()
     else: books = []
     return render(request, 'library/index.html', {'books': books})
+
+def login(request):
+    return render(request, 'library/login.html')
 
 def book_detail(request, book_id):
     return render(request, 'frontend/book_detail.html', {'book': requests.get(f"{API_BASE_URL}/books/{book_id}/").json()} if requests.get(f"{API_BASE_URL}/books/{book_id}/").status_code == 200 else JsonResponse({'error': 'Failed to fetch book'}, status=500))

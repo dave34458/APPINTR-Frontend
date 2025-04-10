@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Login/Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{% static 'css/styles1.css' %}" rel="stylesheet">
+  <script src="{% static 'js/script1.js' %}"></script>
+  <script src="{% static 'js/script2.js' %}"></script>
+  <script src="{% static 'js/script3.js' %}"></script>
+  <script src="{% static 'js/script4.js' %}"></script>
+  <script src="{% static 'js/script5.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/webflow@1.6.3/webflow.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900|Noto+Sans:400,700" rel="stylesheet">
+  <script>
+    WebFont.load({ google: { families: ["Lato:100,300,400,700,900", "Noto Sans:400,700"] } });
+  </script>
+  <style>
+    body {
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .auth-wrapper {
+      max-width: 400px;
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      animation: fadeIn 0.7s ease-in-out;
+    }
+    .auth-title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+    .w-form input {
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+    .w-button {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .toggle-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .toggle-link a {
+      color: #377dff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .hidden { display: none; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideFade {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animated { animation: slideFade 0.5s ease-out; }
+  </style>
+</head>
+<body>
+  <div class="auth-wrapper w-container">
+    <h2 class="auth-title" id="form-title">Login</h2>
+
+    <form id="login-form" method="post" class="w-form animated">
+      {% csrf_token %}
+      <input type="text" name="username" class="w-input" placeholder="Username" required>
+      <input type="password" name="password" class="w-input" placeholder="Password" required>
+      <input type="submit" value="Login" class="w-button button">
+    </form>
+
+    <form id="register-form" method="post" class="w-form hidden animated">
+      {% csrf_token %}
+      <input type="text" name="username" class="w-input" placeholder="Username" required>
+      <input type="email" name="email" class="w-input" placeholder="Email" required>
+      <input type="password" name="password" class="w-input" placeholder="Password" required>
+      <input type="password" name="confirm_password" class="w-input" placeholder="Confirm Password" required>
+      <input type="submit" value="Register" class="w-button button">
+    </form>
+
+    <div class="toggle-link">
+      <span id="toggle-text">Don't have an account?</span>
+      <a id="toggle-link">Register here</a>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('login-form'),
+          registerForm = document.getElementById('register-form'),
+          toggleText = document.getElementById('toggle-text'),
+          toggleLink = document.getElementById('toggle-link'),
+          formTitle = document.getElementById('form-title');
+
+    toggleLink.onclick = () => {
+      const showLogin = !loginForm.classList.contains('hidden');
+      loginForm.classList.toggle('hidden');
+      registerForm.classList.toggle('hidden');
+      formTitle.textContent = showLogin ? 'Register' : 'Login';
+      toggleText.textContent = showLogin ? 'Already have an account?' : "Don't have an account?";
+      toggleLink.textContent = showLogin ? 'Login here' : 'Register here';
+    };
+  </script>
+</body>
+</html>
