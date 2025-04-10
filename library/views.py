@@ -6,7 +6,7 @@ from django.conf import settings
 API_BASE_URL = 'http://127.0.0.1:8000/api'
 
 
-def book_list(request):
+def index(request):
     response = requests.get(f"{API_BASE_URL}/books")
     if response.status_code == 200: books = response.json()
     else: books = []
