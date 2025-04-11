@@ -1,0 +1,50 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Books{% endblock %}
+
+{% block content %}
+<div class="content-wrap">
+<div class="search">
+    <form action="{% url 'library:books' %}" method="GET" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e499f" class="search-component w-form" style="">
+        <input class="search-input w-input" maxlength="256" name="title" placeholder="Search by title…" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e49a0" type="search" id="search" value="{{ request.GET.title }}" required="" style="">
+        <input type="submit" class="search-button w-button" value="">
+    </form>
+    <div data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e49a2" class="search-icon">
+    </div>
+</div>
+    </div>
+    <h2 class="section-title">Books</h2>
+    <div class="w-dyn-list">
+        <div class="_3-col-grid w-dyn-items">
+            {% for book in books %}
+              <div class="card book-card">
+                <a href="{% url 'library:book_detail' book.id %}" class="card-link image w-inline-block">
+                  <img src="{{ book.preview_image }}" alt="{{ book.title }}" class="book-image">
+                </a>
+                <div class="card-data books">
+                  <!-- New Category div for genre -->
+                  <div class="category" id="category-{{ book.id }}">{{ book.genre }}</div>
+                  <a href="{% url 'library:book_detail' book.id %}" class="card-link w-inline-block">
+                    <h3 class="card-title">{{ book.title }}</h3>
+                    <p>{{ book.description|truncatewords:20 }}</p>
+                  </a>
+                </div>
+                <div class="author-info lesson-card w-inline-block">
+                  {% if book.is_available %}
+                    <!-- Green dot for available books -->
+                    <div class="availability-dot available"></div>
+                  {% else %}
+                    <!-- Red dot for unavailable books -->
+                    <div class="availability-dot unavailable"></div>
+                  {% endif %}
+                  <div class="author-name">{{ book.author }}</div>
+                  <div class="published-date">{{ book.published_date }}</div>
+                </div>
+              </div>
+            {% empty %}
+              <p>No books available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

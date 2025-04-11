@@ -14,7 +14,26 @@ def index(request):
     books = res.json() if res.ok else []
     if search:
         books = [b for b in books if search in b['title'].lower()]
+    books.sort(key=lambda b: b.get('added_date', ''), reverse=True)
+    latest_book = books[0] if books else None
+    recent_books = books[1:4]
     return render(request, 'library/index.html', {
+        'latest_book': latest_book,
+        'recent_books': recent_books,
+        'is_authenticated': bool(token),
+        'token': token,
+        'search_query': search,
+    })
+
+def books(request):
+    token = request.COOKIES.get('auth_token')
+    headers = {'Authorization': f'Token {token}'} if token else {}
+    search = request.GET.get('title', '').strip().lower()
+    res = requests.get(f"{API_BASE_URL}/books", headers=headers)
+    books = res.json() if res.ok else []
+    if search:
+        books = [b for b in books if search in b['title'].lower()]
+    return render(request, 'library/books.html', {
         'books': books,
         'is_authenticated': bool(token),
         'token': token,

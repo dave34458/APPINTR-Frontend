@@ -5,7 +5,7 @@
 {% block content %}
 <div class="content-wrap">
 <div class="search">
-    <form action="{% url 'library:index' %}" method="GET" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e499f" class="search-component w-form" style="">
+    <form action="{% url 'library:books' %}" method="GET" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e499f" class="search-component w-form" style="">
         <input class="search-input w-input" maxlength="256" name="title" placeholder="Search by title…" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e49a0" type="search" id="search" value="{{ request.GET.title }}" required="" style="">
         <input type="submit" class="search-button w-button" value="">
     </form>
@@ -13,10 +13,63 @@
     </div>
 </div>
     </div>
-    <h2 class="section-title">Books</h2>
+<div class="section">
+  <div class="section-title">Latest</div>
+
+  <div class="hero-grid">
+    <div class="w-dyn-list">
+      <div role="list" class="w-dyn-items">
+
+        <div role="listitem" class="card book-card hero w-dyn-item">
+          <div class="featured-image">
+                <a href="{% url 'library:book_detail' latest_book.id %}" class="w-inline-block" style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                  <img
+                    class="hero-image"
+                    width="400"
+                    alt=""
+                    src="{{ latest_book.preview_image }}"
+                    sizes="(max-width: 1919px) 100vw, 500px"
+                    style="display: block; margin: 0 auto;"
+                  />
+                </a>
+          </div>
+
+          <div class="featured-info">
+            <a href="Webflow/webflow.html" class="category-link w-inline-block">
+              <div class="category" style="color: hsla(231, 89%, 53.14%, 1)">{{ latest_book.genre }}</div>
+            </a>
+
+            <h1 class="card-title hero-title">{{ latest_book.title }}</h1>
+
+                <div class="author-info lesson-card w-inline-block">
+                  {% if latest_book.is_available %}
+                    <!-- Green dot for available books -->
+                    <div class="availability-dot available"></div>
+                  {% else %}
+                    <!-- Red dot for unavailable books -->
+                    <div class="availability-dot unavailable"></div>
+                  {% endif %}
+                  <div class="author-name">{{ latest_book.author }}</div>
+                  <div class="published-date">{{ latest_book.published_date }}</div>
+                </div>
+            <p>
+                {{ latest_book.description|truncatewords:80 }}
+            </p>
+
+            <div class="button-wrapper align-left">
+              <a href="{% url 'library:book_detail' latest_book.id %}" class="button w-button">
+                View Book
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
     <div class="w-dyn-list">
         <div class="_3-col-grid w-dyn-items">
-            {% for book in books %}
+            {% for book in recent_books %}
               <div class="card book-card">
                 <a href="{% url 'library:book_detail' book.id %}" class="card-link image w-inline-block">
                   <img src="{{ book.preview_image }}" alt="{{ book.title }}" class="book-image">
@@ -47,7 +100,8 @@
         </div>
     </div>
     <div class="button-wrapper">
-        <a href="Books/books.html" class="button w-button">View all</a>
+        <a href="books" class="button w-button">View all</a>
     </div>
 </div>
+    </div>
 {% endblock %}
