@@ -14,7 +14,7 @@ def index(request):
     books = res.json() if res.ok else []
     if search:
         books = [b for b in books if search in b['title'].lower()]
-    books.sort(key=lambda b: b.get('added_date', ''), reverse=True)
+    books.sort(key=lambda b: b.get('id', 0), reverse=True)
     latest_book = books[0] if books else None
     recent_books = books[1:4]
     return render(request, 'library/index.html', {
@@ -25,76 +25,38 @@ def index(request):
         'search_query': search,
     })
 
+
 def books(request):
     token = request.COOKIES.get('auth_token')
     headers = {'Authorization': f'Token {token}'} if token else {}
-    search = request.GET.get('title', '').strip().lower()
+    q = {k: request.GET.get(k, '').lower() for k in ['title', 'genre', 'author', 'published_date']}
     res = requests.get(f"{API_BASE_URL}/books", headers=headers)
     books = res.json() if res.ok else []
-    if search:
-        books = [b for b in books if search in b['title'].lower()]
+    for key, val in q.items():
+        if val:
+            books = [b for b in books if val in b.get(key, '').lower()]
     return render(request, 'library/books.html', {
         'books': books,
         'is_authenticated': bool(token),
         'token': token,
-        'search_query': search
+        **{f'{k}_query': v for k, v in q.items()}
     })
-
-def login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        response = requests.post(f"{API_BASE_URL}/auth/sessions", data={
-            'username': username,
-            'password': password,
-        })
-        if response.status_code == 200:
-            token = response.json().get('token')
-            if token:
-                # Store token in cookies
-                response = redirect('library:index')
-                response.set_cookie('auth_token', token, httponly=True, secure=True)
-                return response
-            else:
-                return render(request, 'library/login.html', {'error': 'Token missing'})
-        return render(request, 'library/login.html', {'error': 'Invalid credentials'})
-    return render(request, 'library/login.html')
-
-
-def register(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
-        response = requests.post(f"{API_BASE_URL}/auth/users", data={
-            'username': username,
-            'email': email,
-            'password': password,
-        })
-        if response.status_code == 201:
-            return redirect('library:index')
-        else:
-            # Handle error
-            return render(request, 'library/login.html', {'error': 'Registration failed'})
-
-
-def logout(request):
-    token = request.COOKIES.get('auth_token')
-    if not token:
-        return redirect('library:index')
-
-    headers = {'Authorization': f'Token {token}'}
-    response = requests.delete(f"http://127.0.0.1:8000/api/auth/logout", headers=headers)
-    if response.status_code == 204:
-        response = redirect('library:index')
-        response.delete_cookie('auth_token')
-        return response
-    else:
-        return redirect('library:index')
 
 
 def book_detail(request, book_id):
-    return render(request, 'frontend/book_detail.html', {'book': requests.get(f"{API_BASE_URL}/books/{book_id}/").json()} if requests.get(f"{API_BASE_URL}/books/{book_id}/").status_code == 200 else JsonResponse({'error': 'Failed to fetch book'}, status=500))
+    book_response = requests.get(f"{API_BASE_URL}/books/{book_id}")
+    if book_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch book'}, status=500)
+    book = book_response.json()
+    available_books_response = requests.get(f"{API_BASE_URL}/books/{book_id}/availablebooks")
+    if available_books_response.status_code != 200:
+        return JsonResponse({'error': 'Failed to fetch available books'}, status=500)
+    available_books = available_books_response.json()
+    context = {
+        'book': book,
+        'available_books': available_books
+    }
+    return render(request, 'library/book-detail.html', context)
 
 def create_book(request):
     return redirect('book_list') if requests.post(f"{API_BASE_URL}/books/", data={k: request.POST.get(k) for k in ['title', 'author', 'published_date', 'isbn']}).status_code == 201 else JsonResponse({'error': 'Failed to create book'}, status=400)
@@ -140,3 +102,46 @@ def update_review(request, book_id, review_id):
 
 def delete_review(request, book_id, review_id):
     return redirect('review_list', book_id=book_id) if requests.delete(f"{API_BASE_URL}/books/{book_id}/reviews/{review_id}/").status_code == 204 else JsonResponse({'error': 'Failed to delete review'}, status=400)
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        response = requests.post(f"{API_BASE_URL}/auth/sessions", data={
+            'username': username,
+            'password': password,
+        })
+        if response.status_code == 200:
+            token = response.json().get('token')
+            if token:
+                # Store token in cookies
+                response = redirect('library:index')
+                response.set_cookie('auth_token', token, httponly=True, secure=True)
+                return response
+            else:
+                return render(request, 'library/login.html', {'error': 'Token missing'})
+        return render(request, 'library/login.html', {'error': 'Invalid credentials'})
+    return render(request, 'library/login.html')
+
+
+def register(request):
+    if request.method == 'POST':
+        username, email, password = request.POST['username'], request.POST['email'], request.POST['password']
+        r = requests.post(f"{API_BASE_URL}/auth/users", data={'username': username, 'email': email, 'password': password})
+        if r.status_code == 201: return login(request)
+        return render(request, 'library/login.html', {'error': 'Registration failed'})
+
+
+def logout(request):
+    token = request.COOKIES.get('auth_token')
+    if not token:
+        return redirect('library:index')
+
+    headers = {'Authorization': f'Token {token}'}
+    response = requests.delete(f"http://127.0.0.1:8000/api/auth/logout", headers=headers)
+    if response.status_code == 204:
+        response = redirect('library:index')
+        response.delete_cookie('auth_token')
+        return response
+    else:
+        return redirect('library:index')

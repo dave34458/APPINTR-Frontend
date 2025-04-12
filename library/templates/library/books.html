@@ -16,34 +16,45 @@
     <h2 class="section-title">Books</h2>
     <div class="w-dyn-list">
         <div class="_3-col-grid w-dyn-items">
-            {% for book in books %}
-              <div class="card book-card">
-                <a href="{% url 'library:book_detail' book.id %}" class="card-link image w-inline-block">
-                  <img src="{{ book.preview_image }}" alt="{{ book.title }}" class="book-image">
-                </a>
-                <div class="card-data books">
-                  <!-- New Category div for genre -->
-                  <div class="category" id="category-{{ book.id }}">{{ book.genre }}</div>
-                  <a href="{% url 'library:book_detail' book.id %}" class="card-link w-inline-block">
-                    <h3 class="card-title">{{ book.title }}</h3>
-                    <p>{{ book.description|truncatewords:20 }}</p>
-                  </a>
-                </div>
-                <div class="author-info lesson-card w-inline-block">
-                  {% if book.is_available %}
-                    <!-- Green dot for available books -->
-                    <div class="availability-dot available"></div>
-                  {% else %}
-                    <!-- Red dot for unavailable books -->
-                    <div class="availability-dot unavailable"></div>
-                  {% endif %}
-                  <div class="author-name">{{ book.author }}</div>
-                  <div class="published-date">{{ book.published_date }}</div>
-                </div>
-              </div>
-            {% empty %}
-              <p>No books available.</p>
-            {% endfor %}
+{% for book in books %}
+  <div class="card book-card">
+    <a href="{% url 'library:book_detail' book.id %}" class="card-link image w-inline-block">
+      <img src="{{ book.preview_image }}" alt="{{ book.title }}" class="book-image">
+    </a>
+    <div class="card-data books">
+      <!-- Genre link -->
+      <a href="{% url 'library:books' %}?genre={{ book.genre|urlencode }}" class="category-link w-inline-block">
+        <div class="category" id="category-{{ book.id }}">{{ book.genre }}</div>
+      </a>
+      <!-- Title + description -->
+      <a href="{% url 'library:book_detail' book.id %}" class="card-link w-inline-block">
+        <h3 class="card-title">{{ book.title }}</h3>
+        <p>{{ book.description|truncatewords:20 }}</p>
+      </a>
+    </div>
+
+    <div class="author-info lesson-card w-inline-block">
+      {% if book.is_available %}
+        <div class="availability-dot available"></div>
+      {% else %}
+        <div class="availability-dot unavailable"></div>
+      {% endif %}
+
+      <!-- Author link -->
+      <a href="{% url 'library:books' %}?author={{ book.author|urlencode }}" class="author-name">
+        {{ book.author }}
+      </a>
+
+      <!-- Published date link -->
+      <a href="{% url 'library:books' %}?published_date={{ book.published_date|urlencode }}" class="published-date">
+        {{ book.published_date }}
+      </a>
+    </div>
+  </div>
+{% empty %}
+  <p>No books available.</p>
+{% endfor %}
+
         </div>
     </div>
 </div>

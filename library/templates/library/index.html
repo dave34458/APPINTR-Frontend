@@ -1,6 +1,6 @@
 {% extends 'library/base.html' %}
 
-{% block title %}Books{% endblock %}
+{% block title %}Educare{% endblock %}
 
 {% block content %}
 <div class="content-wrap">
@@ -35,7 +35,7 @@
           </div>
 
           <div class="featured-info">
-            <a href="Webflow/webflow.html" class="category-link w-inline-block">
+            <a href="{% url 'library:books' %}?genre={{ latest_book.genre|urlencode }}" class="category-link w-inline-block">
               <div class="category" style="color: hsla(231, 89%, 53.14%, 1)">{{ latest_book.genre }}</div>
             </a>
 
@@ -76,7 +76,9 @@
                 </a>
                 <div class="card-data books">
                   <!-- New Category div for genre -->
-                  <div class="category" id="category-{{ book.id }}">{{ book.genre }}</div>
+                    <a href="{% url 'library:books' %}?genre={{ book.genre|urlencode }}" class="category-link w-inline-block">
+                      <div class="category" id="category-{{ book.id }}">{{ book.genre }}</div>
+                    </a>
                   <a href="{% url 'library:book_detail' book.id %}" class="card-link w-inline-block">
                     <h3 class="card-title">{{ book.title }}</h3>
                     <p>{{ book.description|truncatewords:20 }}</p>

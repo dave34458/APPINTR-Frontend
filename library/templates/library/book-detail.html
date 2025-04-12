@@ -1,0 +1,113 @@
+{% extends 'library/base.html' %}
+
+{% block title %}{{ book.title }} - Details{% endblock %}
+
+{% block content %}
+    <head>
+        <style>
+            /* General Content Styles */
+.content-wrap {
+    margin: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+.book-detail {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Book Information Section */
+.book-info {
+    margin-bottom: 30px;
+}
+
+.book-title {
+    font-size: 2em;
+    color: #333;
+}
+
+.book-author, .book-genre, .book-published {
+    font-size: 1.1em;
+    color: #666;
+}
+
+/* Available Copies Section */
+.available-copies {
+    border-top: 2px solid #eee;
+    padding-top: 20px;
+}
+
+.section-title {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.available-books-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.available-book-card {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1em;
+    color: #555;
+}
+
+.status-available {
+    color: green;
+}
+
+.status-unavailable {
+    color: red;
+}
+
+.no-available-books {
+    font-size: 1.2em;
+    color: #999;
+    text-align: center;
+}
+
+        </style>
+    </head>
+<div class="content-wrap">
+    <div class="book-detail">
+        <!-- Book Information Section -->
+        <section class="book-info">
+            <h2 class="book-title">{{ book.title }}</h2> <img src="{{ book.preview_image }}" alt="">
+            <p class="book-author"><strong>Author:</strong> {{ book.author }}</p>
+            <p class="book-genre"><strong>Genre:</strong> {{ book.genre }}</p>
+            <p class="book-published"><strong>Published:</strong> {{ book.published_date }}</p>
+            <p>{{ book.description }}</p>
+        </section>
+
+        <!-- Available Copies Section -->
+        <section class="available-copies">
+            <h3 class="section-title">Available Copies</h3>
+            <div class="available-books-list">
+                {% for available_book in available_books %}
+                    <div class="available-book-card">
+                        <p><strong>Copy ID:</strong> {{ available_book.id }}</p>
+                        <p><strong>Location:</strong> {{ available_book.location }}</p>
+                        <p><strong>Availability:</strong>
+                            {% if available_book.copy_is_available %}
+                                <span class="status-available">✅ Available</span>
+                            {% else %}
+                                <span class="status-unavailable">❌ Not Available</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% empty %}
+                    <p class="no-available-books">No available copies of this book.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
