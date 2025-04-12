@@ -3,111 +3,79 @@
 {% block title %}{{ book.title }} - Details{% endblock %}
 
 {% block content %}
-    <head>
-        <style>
-            /* General Content Styles */
-.content-wrap {
-    margin: 20px;
-    font-family: 'Arial', sans-serif;
-}
+    <div class="content">
+    <div class="search"></div>
+    <div class="search"></div>
 
-.book-detail {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Book Information Section */
-.book-info {
-    margin-bottom: 30px;
-}
-
-.book-title {
-    font-size: 2em;
-    color: #333;
-}
-
-.book-author, .book-genre, .book-published {
-    font-size: 1.1em;
-    color: #666;
-}
-
-/* Available Copies Section */
-.available-copies {
-    border-top: 2px solid #eee;
-    padding-top: 20px;
-}
-
-.section-title {
-    font-size: 1.5em;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.available-books-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.available-book-card {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-size: 1em;
-    color: #555;
-}
-
-.status-available {
-    color: green;
-}
-
-.status-unavailable {
-    color: red;
-}
-
-.no-available-books {
-    font-size: 1.2em;
-    color: #999;
-    text-align: center;
-}
-
-        </style>
-    </head>
-<div class="content-wrap">
-    <div class="book-detail">
         <!-- Book Information Section -->
-        <section class="book-info">
-            <h2 class="book-title">{{ book.title }}</h2> <img src="{{ book.preview_image }}" alt="">
-            <p class="book-author"><strong>Author:</strong> {{ book.author }}</p>
-            <p class="book-genre"><strong>Genre:</strong> {{ book.genre }}</p>
-            <p class="book-published"><strong>Published:</strong> {{ book.published_date }}</p>
+        <div class="section">
+            <h1>{{ book.title }}</h1>
             <p>{{ book.description }}</p>
-        </section>
+            <a href="#" class="author-info w-inline-block">
+                <img alt="{{ book.author }}" src="{{ book.author_image }}" sizes="30px" srcset="{{ book.author_image }}" class="avatar">
+                <div>by</div>
+                <div class="author-name">{{ book.author }}</div>
+            </a>
+        </div>
 
         <!-- Available Copies Section -->
-        <section class="available-copies">
-            <h3 class="section-title">Available Copies</h3>
-            <div class="available-books-list">
-                {% for available_book in available_books %}
-                    <div class="available-book-card">
-                        <p><strong>Copy ID:</strong> {{ available_book.id }}</p>
-                        <p><strong>Location:</strong> {{ available_book.location }}</p>
-                        <p><strong>Availability:</strong>
-                            {% if available_book.copy_is_available %}
-                                <span class="status-available">✅ Available</span>
-                            {% else %}
-                                <span class="status-unavailable">❌ Not Available</span>
-                            {% endif %}
-                        </p>
+        <div class="content-grid">
+            <div>
+                <h2>Available Copies</h2>
+                <div class="card extra-padding w-richtext">
+                    <p><strong>Genre:</strong> {{ book.genre }}</p>
+                    <p><strong>Published:</strong> {{ book.published_date }}</p>
+                    <div class="available-books-list">
+                        {% for available_book in available_books %}
+                            <div class="available-book-card">
+                                <p><strong>Copy ID:</strong> {{ available_book.id }}</p>
+                                <p><strong>Location:</strong> {{ available_book.location }}</p>
+                                <p><strong>Availability:</strong>
+                                    {% if available_book.copy_is_available %}
+                                        <span class="status-available">✅ Available</span>
+                                    {% else %}
+                                        <span class="status-unavailable">❌ Not Available</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% empty %}
+                            <p class="no-available-books">No available copies of this book.</p>
+                        {% endfor %}
                     </div>
-                {% empty %}
-                    <p class="no-available-books">No available copies of this book.</p>
-                {% endfor %}
+                </div>
             </div>
-        </section>
+
+            <!-- Right Sidebar with Other Books by Author -->
+            <div class="right-sidebar_wrapper">
+                <div class="sticky-sidebar">
+                    <div class="section-title">Other Books by {{ book.author }}</div>
+                    <div class="w-dyn-list">
+                        <div role="list" class="w-dyn-items">
+                            {% for other_book in available_books %}
+                                {% if other_book.id != book.id %}
+                                    <div role="listitem" class="w-dyn-item">
+                                        <div class="card right-sidebar">
+                                            <a href="{{ other_book.get_absolute_url }}" class="category-link w-inline-block">
+                                                <div class="category">{{ other_book.genre }}</div>
+                                            </a>
+                                            <a href="{{ other_book.get_absolute_url }}" class="sidebar-link w-inline-block">
+                                                <h2 class="card-title small">{{ other_book.title }}</h2>
+                                            </a>
+                                            <a href="{{ other_book.get_absolute_url }}" class="author-info lower-margin w-inline-block">
+                                                <img alt="{{ other_book.author }}" src="{{ other_book.author_image }}" sizes="30px" srcset="{{ other_book.author_image }}" class="avatar">
+                                                <div>by</div>
+                                                <div class="author-name">{{ other_book.author }}</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% empty %}
+                                <p>No other books by this author available.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 {% endblock %}

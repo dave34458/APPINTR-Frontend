@@ -1,0 +1,104 @@
+<h1>Your Borrowed Books</h1>
+<table>
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Book Title</th>
+            <th>Author</th>
+            <th>Published Date</th>
+            <th>Genre</th>
+            <th>ISBN</th>
+            <th>Language</th>
+            <th>Return Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for borrow in borrows %}
+        <tr>
+            <td>{{ borrow.user_username }}</td>
+            <td>{{ borrow.user_email }}</td>
+            <td>{{ borrow.book_title }}</td>
+            <td>{{ borrow.book_author }}</td>
+            <td>{{ borrow.book_published_date }}</td>
+            <td>{{ borrow.book_genre }}</td>
+            <td>{{ borrow.book_isbn }}</td>
+            <td>{{ borrow.book_language }}</td>
+            <td>{{ borrow.return_date }}</td>
+            <td>
+                {% if borrow.date_returned %}
+                    {{ borrow.date_returned }}
+                {% else %}
+                    <form method="POST" action="{% url 'library:return_book' borrow.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="user" value="{{ borrow.user }}">  <!-- User ID -->
+                        <input type="hidden" name="available_book" value="{{ borrow.available_book }}">  <!-- User ID -->
+                        <input type="hidden" name="borrow_date" value="{{ borrow.borrow_date }}">  <!-- Book ID -->
+                        <input type="hidden" name="return_date" value="{{ borrow.return_date }}">  <!-- Return Date -->
+                        <button type="submit">Return</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No borrowed books.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Borrow a New Book</h2>
+<form method="POST">
+    {% csrf_token %}
+    <label for="user">Select User:</label>
+    <select id="user" name="user" required>
+        {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="available_book">Available Book:</label>
+    <select id="available_book" name="available_book" required>
+        {% for ab in availablebooks %}
+            <option value="{{ ab.id }}">{{ ab.book.title }} - {{ ab.location }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="return_date">Return Date:</label>
+    <input type="date" id="return_date" name="return_date" required><br><br>
+
+    <button type="submit">Borrow Book</button>
+</form>
+<script>
+    document.querySelectorAll(".return-button").forEach(button => button.addEventListener("click", function() {
+        const borrowId = this.dataset.borrowId;  // Get the borrow ID from the button's data attribute
+
+        // Send a PATCH request to the borrow endpoint to update the date_returned
+        fetch(`/api/borrows/${borrowId}/`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector('[name="csrfmiddlewaretoken"]').value  // CSRF token for protection
+            },
+            body: JSON.stringify({
+                date_returned: new Date().toISOString().split('T')[0]  // Send current date as date_returned (in YYYY-MM-DD format)
+            })
+        }).then(res => {
+            if (res.ok) {
+                // If the response is OK, update the date_returned in the table
+                const borrowRow = document.querySelector(`#borrow_${borrowId}`); // Get the borrow row by ID
+                const returnDateCell = borrowRow.querySelector("td:nth-child(8)"); // Select the 8th cell (Return Date column)
+                returnDateCell.innerText = new Date().toISOString().split('T')[0];  // Set the current date as the return date
+
+                // Disable the button after the action is done to prevent multiple clicks
+                this.disabled = true;
+            } else {
+                // Handle any errors (optional)
+                console.error("Failed to update the borrow record.");
+            }
+        }).catch(err => {
+            // Handle network or other errors
+            console.error("Network error: ", err);
+        });
+    }));
+</script>

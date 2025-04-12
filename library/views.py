@@ -1,11 +1,20 @@
 import requests
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
+from django.urls import reverse
+from django.utils.timezone import now
 
 API_BASE_URL = 'http://127.0.0.1:8000/api'
 
-
+def staff_required(function):
+    def wrap(request, *args, **kwargs):
+        token = request.COOKIES.get('auth_token')
+        if not token or requests.get(f'{API_BASE_URL}/users/me', headers={'Authorization': f'Token {token}'}).json().get('role') != 'staff':
+            return JsonResponse({'error': 'Forbidden'}, status=403)
+        return function(request, *args, **kwargs)
+    return wrap
 def index(request):
     token = request.COOKIES.get('auth_token')
     headers = {'Authorization': f'Token {token}'} if token else {}
@@ -58,8 +67,65 @@ def book_detail(request, book_id):
     }
     return render(request, 'library/book-detail.html', context)
 
+
+@staff_required
+def borrows(request):
+    headers = {'Authorization': f'Token {request.COOKIES.get("auth_token")}'}
+    data = {endpoint: requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers).json() for endpoint in
+            ['borrows', 'availablebooks', 'users', 'books']}
+
+    for borrow in data['borrows']:
+        available_book = next((ab for ab in data['availablebooks'] if ab['id'] == borrow['available_book']), None)
+        if available_book:
+            book = next((b for b in data['books'] if b['id'] == available_book['book']), None)
+            if book:
+                borrow.update({
+                    'book_title': book['title'], 'book_author': book['author'],
+                    'book_published_date': book.get('published_date', ''),
+                    'book_genre': book.get('genre', ''), 'book_isbn': book.get('isbn', ''),
+                    'book_language': book.get('language', '')
+                })
+        user = next((u for u in data['users'] if u['id'] == borrow['user']), None)
+        if user:
+            borrow.update({'user_username': user.get('username', ''), 'user_full_name': user.get('full_name', ''),
+                           'user_email': user.get('email', '')})
+
+    if request.method == 'POST':
+        user_id, available_book_id, return_date = request.POST.get('user'), request.POST.get(
+            'available_book'), request.POST.get('return_date')
+        if user_id and available_book_id and return_date:
+            borrow_response = requests.post(f"{API_BASE_URL}/borrows", headers=headers, data={
+                'user': user_id, 'available_book': available_book_id, 'return_date': return_date
+            })
+            if borrow_response.status_code == 201:
+                return redirect('library:borrows')
+    return render(request, 'library/borrows.html', {
+        'borrows': data['borrows'], 'availablebooks': data['availablebooks'], 'users': data['users']
+    })
+
+
+@staff_required
+def return_book(request, borrow_id):
+    if request.method == 'POST':
+        headers = {'Authorization': f'Token {request.COOKIES.get("auth_token")}'}
+        book_data = {
+            "user": request.POST.get('user'), "available_book": request.POST.get('available_book'),
+            "borrow_date": request.POST.get('borrow_date'), "return_date": request.POST.get('return_date'),
+            "date_returned": now().date().isoformat()
+        }
+        response = requests.put(f"{API_BASE_URL}/borrows/{borrow_id}", json=book_data, headers=headers)
+        if response.status_code == 200:
+            return redirect(reverse('library:borrows'))
+        return JsonResponse({"status": "error", "message": "Failed to update the book return"}, status=400)
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+
+
 def create_book(request):
-    return redirect('book_list') if requests.post(f"{API_BASE_URL}/books/", data={k: request.POST.get(k) for k in ['title', 'author', 'published_date', 'isbn']}).status_code == 201 else JsonResponse({'error': 'Failed to create book'}, status=400)
+    response = requests.post(f"{API_BASE_URL}/books/",
+                             data={k: request.POST.get(k) for k in ['title', 'author', 'published_date', 'isbn']})
+    return redirect('book_list') if response.status_code == 201 else JsonResponse({'error': 'Failed to create book'},
+                                                                                  status=400)
+
 
 def update_book(request, book_id):
     return redirect('book_detail', book_id=book_id) if requests.put(f"{API_BASE_URL}/books/{book_id}/", data={k: request.POST.get(k) for k in ['title', 'author', 'published_date', 'isbn']}).status_code in [200, 204] else JsonResponse({'error': 'Failed to update book'}, status=400)
@@ -78,18 +144,6 @@ def update_availablebook(request, book_id, available_book_id):
 
 def delete_availablebook(request, book_id, available_book_id):
     return redirect('availablebook_list', book_id=book_id) if requests.delete(f"{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/").status_code == 204 else JsonResponse({'error': 'Failed to delete available book'}, status=400)
-
-def borrow_list(request, book_id, available_book_id):
-    return render(request, 'frontend/borrow_list.html', {'borrows': requests.get(f"{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/").json()} if requests.get(f"{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/").status_code == 200 else JsonResponse({'error': 'Failed to fetch borrows'}, status=500))
-
-def create_borrow(request, book_id, available_book_id):
-    return redirect('borrow_list', book_id=book_id, available_book_id=available_book_id) if requests.post(f"{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/", data={k: request.POST.get(k) for k in ['user_id', 'borrow_date']}).status_code == 201 else JsonResponse({'error': 'Failed to create borrow'}, status=400)
-
-def update_borrow(request, book_id, available_book_id, borrow_id):
-    return redirect('borrow_list', book_id=book_id, available_book_id=available_book_id) if requests.put(f"{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/{borrow_id}/", data={k: request.POST.get(k) for k in ['user_id', 'return_date']}).status_code in [200, 204] else JsonResponse({'error': 'Failed to update borrow'}, status=400)
-
-def delete_borrow(request, book_id, available_book_id, borrow_id):
-    return redirect('borrow_list', book_id=book_id, available_book_id=available_book_id) if requests.delete(f"{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/{borrow_id}/").status_code == 204 else JsonResponse({'error': 'Failed to delete borrow'}, status=400)
 
 def review_list(request, book_id):
     return render(request, 'frontend/review_list.html', {'reviews': requests.get(f"{API_BASE_URL}/books/{book_id}/reviews/").json()} if requests.get(f"{API_BASE_URL}/books/{book_id}/reviews/").status_code == 200 else JsonResponse({'error': 'Failed to fetch reviews'}, status=500))
