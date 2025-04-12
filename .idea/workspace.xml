@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="added login">
+    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="created borrows">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/templates/library/borrows.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/borrows.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -105,7 +104,7 @@
       <workItem from="1744313476220" duration="14436000" />
       <workItem from="1744382073255" duration="244000" />
       <workItem from="1744393281939" duration="6332000" />
-      <workItem from="1744445059056" duration="17348000" />
+      <workItem from="1744445059056" duration="25467000" />
     </task>
     <task id="LOCAL-00001" summary="first">
       <option name="closed" value="true" />
@@ -211,7 +210,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744457591889</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="created borrows">
+      <option name="closed" value="true" />
+      <created>1744474180661</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1744474180662</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -222,6 +229,7 @@
     <MESSAGE value="fix the navbar man" />
     <MESSAGE value="login.html" />
     <MESSAGE value="added login" />
-    <option name="LAST_COMMIT_MESSAGE" value="added login" />
+    <MESSAGE value="created borrows" />
+    <option name="LAST_COMMIT_MESSAGE" value="created borrows" />
   </component>
 </project>
