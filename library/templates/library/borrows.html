@@ -1,104 +1,239 @@
-<h1>Your Borrowed Books</h1>
-<table>
-    <thead>
-        <tr>
-            <th>User</th>
-            <th>Book Title</th>
-            <th>Author</th>
-            <th>Published Date</th>
-            <th>Genre</th>
-            <th>ISBN</th>
-            <th>Language</th>
-            <th>Return Date</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for borrow in borrows %}
-        <tr>
-            <td>{{ borrow.user_username }}</td>
-            <td>{{ borrow.user_email }}</td>
-            <td>{{ borrow.book_title }}</td>
-            <td>{{ borrow.book_author }}</td>
-            <td>{{ borrow.book_published_date }}</td>
-            <td>{{ borrow.book_genre }}</td>
-            <td>{{ borrow.book_isbn }}</td>
-            <td>{{ borrow.book_language }}</td>
-            <td>{{ borrow.return_date }}</td>
-            <td>
-                {% if borrow.date_returned %}
-                    {{ borrow.date_returned }}
-                {% else %}
-                    <form method="POST" action="{% url 'library:return_book' borrow.id %}">
+{% extends "library/base.html" %}
+
+{% block title %}Borrows - Educare{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+    .search-filters input {
+        margin: 5px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        width: 200px;
+    }
+    .search-filters input:focus {
+        border-color: #0056b3;
+        outline: none;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f8f8f8;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .form-table {
+        margin-top: 20px;
+        width: 100%;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .form-table td {
+        padding: 10px;
+    }
+    .form-table input, .form-table select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    .form-table button {
+        width: 100%;
+        background-color: #28a745;
+    }
+    .form-table button:hover {
+        background-color: #218838;
+    }
+</style>
+
+<div class="container">
+    <h1>Borrow Records</h1>
+
+    <div class="search-filters">
+        <input type="text" id="searchLocation" placeholder="Search by Location" onkeyup="filterTable()">
+        <input type="text" id="searchUser" placeholder="Search by User" onkeyup="filterTable()">
+        <input type="text" id="searchTitle" placeholder="Search by Book Title" onkeyup="filterTable()">
+        <input type="text" id="searchAuthor" placeholder="Search by Author" onkeyup="filterTable()">
+        <input type="text" id="searchGenre" placeholder="Search by Genre" onkeyup="filterTable()">
+        <input type="text" id="searchISBN" placeholder="Search by ISBN" onkeyup="filterTable()">
+        <input type="text" id="searchLanguage" placeholder="Search by Language" onkeyup="filterTable()">
+        <input type="text" id="searchReturnDate" placeholder="Search by Return Date" onkeyup="filterTable()">
+    </div>
+
+    <table id="borrowTable">
+        <thead>
+            <tr>
+                <th>Location</th>
+                <th>User</th>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>Published Date</th>
+                <th>Genre</th>
+                <th>ISBN</th>
+                <th>Language</th>
+                <th>Return Date</th>
+                <th>Action</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for borrow in borrows %}
+            <tr>
+                <td>{{ borrow.location }}</td>
+                <td>{{ borrow.user_username }}</td>
+                <td>{{ borrow.book_title }}</td>
+                <td>{{ borrow.book_author }}</td>
+                <td>{{ borrow.book_published_date }}</td>
+                <td>{{ borrow.book_genre }}</td>
+                <td>{{ borrow.book_isbn }}</td>
+                <td>{{ borrow.book_language }}</td>
+                <td>{{ borrow.return_date }}</td>
+                <td>
+                    {% if borrow.date_returned %}
+                        {{ borrow.date_returned }}
+                    {% else %}
+                            <form method="POST" action="{% url 'library:return_book' borrow.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="user" value="{{ borrow.user }}">
+                                <input type="hidden" name="available_book" value="{{ borrow.available_book }}">
+                                <input type="hidden" name="borrow_date" value="{{ borrow.borrow_date }}">
+                                <input type="hidden" name="return_date" value="{{ borrow.return_date }}">
+                                <button type="submit">Return</button>
+                            </form>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="{% url 'library:delete_borrow' borrow.id %}">
                         {% csrf_token %}
-                        <input type="hidden" name="user" value="{{ borrow.user }}">  <!-- User ID -->
-                        <input type="hidden" name="available_book" value="{{ borrow.available_book }}">  <!-- User ID -->
-                        <input type="hidden" name="borrow_date" value="{{ borrow.borrow_date }}">  <!-- Book ID -->
-                        <input type="hidden" name="return_date" value="{{ borrow.return_date }}">  <!-- Return Date -->
-                        <button type="submit">Return</button>
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit">Delete</button>
                     </form>
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="8">No borrowed books.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<h2>Borrow a New Book</h2>
-<form method="POST">
-    {% csrf_token %}
-    <label for="user">Select User:</label>
-    <select id="user" name="user" required>
-        {% for user in users %}
-            <option value="{{ user.id }}">{{ user.username }}</option>
-        {% endfor %}
-    </select><br><br>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="11">No borrowed books.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <label for="available_book">Available Book:</label>
-    <select id="available_book" name="available_book" required>
-        {% for ab in availablebooks %}
-            <option value="{{ ab.id }}">{{ ab.book.title }} - {{ ab.location }}</option>
-        {% endfor %}
-    </select><br><br>
+    <h2>Enter a New Borrow Record</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <table class="form-table">
+            <tr>
+                <td><label for="user">Select User:</label></td>
+                <td>
+                    <select id="user" name="user" required>
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="available_book">Available Book:</label></td>
+                <td>
+                    <select id="available_book" name="available_book" required>
+                        {% for ab in availablebooks %}
+                            <option value="{{ ab.id }}">{{ ab.id }} - {{ ab.book_title }} - {{ ab.location }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="return_date">Return Date:</label></td>
+                <td><input type="date" id="return_date" name="return_date" required></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit">Borrow Book</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
 
-    <label for="return_date">Return Date:</label>
-    <input type="date" id="return_date" name="return_date" required><br><br>
-
-    <button type="submit">Borrow Book</button>
-</form>
 <script>
-    document.querySelectorAll(".return-button").forEach(button => button.addEventListener("click", function() {
-        const borrowId = this.dataset.borrowId;  // Get the borrow ID from the button's data attribute
+    function filterTable() {
+        const location = document.getElementById('searchLocation').value.toUpperCase();
+        const user = document.getElementById('searchUser').value.toUpperCase();
+        const title = document.getElementById('searchTitle').value.toUpperCase();
+        const author = document.getElementById('searchAuthor').value.toUpperCase();
+        const genre = document.getElementById('searchGenre').value.toUpperCase();
+        const isbn = document.getElementById('searchISBN').value.toUpperCase();
+        const language = document.getElementById('searchLanguage').value.toUpperCase();
+        const returnDate = document.getElementById('searchReturnDate').value.toUpperCase();
 
-        // Send a PATCH request to the borrow endpoint to update the date_returned
-        fetch(`/api/borrows/${borrowId}/`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": document.querySelector('[name="csrfmiddlewaretoken"]').value  // CSRF token for protection
-            },
-            body: JSON.stringify({
-                date_returned: new Date().toISOString().split('T')[0]  // Send current date as date_returned (in YYYY-MM-DD format)
-            })
-        }).then(res => {
-            if (res.ok) {
-                // If the response is OK, update the date_returned in the table
-                const borrowRow = document.querySelector(`#borrow_${borrowId}`); // Get the borrow row by ID
-                const returnDateCell = borrowRow.querySelector("td:nth-child(8)"); // Select the 8th cell (Return Date column)
-                returnDateCell.innerText = new Date().toISOString().split('T')[0];  // Set the current date as the return date
+        const rows = document.querySelector("#borrowTable tbody").rows;
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const locationCell = row.cells[0].textContent.toUpperCase();
+            const userCell = row.cells[1].textContent.toUpperCase();
+            const titleCell = row.cells[2].textContent.toUpperCase();
+            const authorCell = row.cells[3].textContent.toUpperCase();
+            const genreCell = row.cells[5].textContent.toUpperCase();
+            const isbnCell = row.cells[6].textContent.toUpperCase();
+            const languageCell = row.cells[7].textContent.toUpperCase();
+            const returnDateCell = row.cells[8].textContent.toUpperCase();
 
-                // Disable the button after the action is done to prevent multiple clicks
-                this.disabled = true;
+            if (
+                (locationCell.indexOf(location) > -1 || location === '') &&
+                (userCell.indexOf(user) > -1 || user === '') &&
+                (titleCell.indexOf(title) > -1 || title === '') &&
+                (authorCell.indexOf(author) > -1 || author === '') &&
+                (genreCell.indexOf(genre) > -1 || genre === '') &&
+                (isbnCell.indexOf(isbn) > -1 || isbn === '') &&
+                (languageCell.indexOf(language) > -1 || language === '') &&
+                (returnDateCell.indexOf(returnDate) > -1 || returnDate === '')
+            ) {
+                row.style.display = "";
             } else {
-                // Handle any errors (optional)
-                console.error("Failed to update the borrow record.");
+                row.style.display = "none";
             }
-        }).catch(err => {
-            // Handle network or other errors
-            console.error("Network error: ", err);
-        });
-    }));
+        }
+    }
 </script>
+{% endblock %}

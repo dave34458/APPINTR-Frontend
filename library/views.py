@@ -69,40 +69,36 @@ def book_detail(request, book_id):
 
 
 @staff_required
-def borrows(request):
+def borrows(request, borrow_id=None):
     headers = {'Authorization': f'Token {request.COOKIES.get("auth_token")}'}
-    data = {endpoint: requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers).json() for endpoint in
-            ['borrows', 'availablebooks', 'users', 'books']}
-
+    data = {endpoint: requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers).json() for endpoint in ['borrows', 'availablebooks', 'users', 'books']}
     for borrow in data['borrows']:
         available_book = next((ab for ab in data['availablebooks'] if ab['id'] == borrow['available_book']), None)
         if available_book:
+            borrow['location'] = available_book.get('location', '')
             book = next((b for b in data['books'] if b['id'] == available_book['book']), None)
-            if book:
-                borrow.update({
-                    'book_title': book['title'], 'book_author': book['author'],
-                    'book_published_date': book.get('published_date', ''),
-                    'book_genre': book.get('genre', ''), 'book_isbn': book.get('isbn', ''),
-                    'book_language': book.get('language', '')
-                })
+            if book: borrow.update({f'book_{key}': book.get(key, '') for key in ['title', 'author', 'published_date', 'genre', 'isbn', 'language']})
         user = next((u for u in data['users'] if u['id'] == borrow['user']), None)
-        if user:
-            borrow.update({'user_username': user.get('username', ''), 'user_full_name': user.get('full_name', ''),
-                           'user_email': user.get('email', '')})
-
-    if request.method == 'POST':
-        user_id, available_book_id, return_date = request.POST.get('user'), request.POST.get(
-            'available_book'), request.POST.get('return_date')
-        if user_id and available_book_id and return_date:
-            borrow_response = requests.post(f"{API_BASE_URL}/borrows", headers=headers, data={
-                'user': user_id, 'available_book': available_book_id, 'return_date': return_date
-            })
-            if borrow_response.status_code == 201:
+        if user: borrow.update({f'user_{key}': user.get(key, '') for key in ['username', 'full_name', 'email']})
+    for available_book in data['availablebooks']:
+        book = next((b for b in data['books'] if b['id'] == available_book['book']), None)
+        if book: available_book.update({f'book_{key}': book.get(key, '') for key in ['title', 'author', 'published_date', 'genre', 'isbn', 'language']})
+    if request.method == 'POST' and request.POST.get('_method') == 'DELETE':
+        try:
+            response = requests.delete(f'{API_BASE_URL}/borrows/{borrow_id}', headers=headers)
+            if response.status_code == 204:
                 return redirect('library:borrows')
-    return render(request, 'library/borrows.html', {
-        'borrows': data['borrows'], 'availablebooks': data['availablebooks'], 'users': data['users']
-    })
-
+            else:
+                return HttpResponse(f"Error deleting borrow record: {response.text}", status=response.status_code)
+        except requests.RequestException as e:
+            return HttpResponse(f"An error occurred: {str(e)}", status=500)
+    elif request.method == 'POST':
+        user_id, available_book_id, return_date = request.POST.get('user'), request.POST.get('available_book'), request.POST.get('return_date')
+        if user_id and available_book_id and return_date:
+            borrow_response = requests.post(f"{API_BASE_URL}/borrows", headers=headers, data={'user': user_id, 'available_book': available_book_id, 'return_date': return_date})
+            if borrow_response.status_code == 201: return redirect('library:borrows')
+            else: return HttpResponse(f"An error occurred", status=500)
+    return render(request, 'library/borrows.html', {'borrows': data['borrows'], 'availablebooks': data['availablebooks'], 'users': data['users']})
 
 @staff_required
 def return_book(request, borrow_id):
@@ -118,7 +114,6 @@ def return_book(request, borrow_id):
             return redirect(reverse('library:borrows'))
         return JsonResponse({"status": "error", "message": "Failed to update the book return"}, status=400)
     return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
-
 
 def create_book(request):
     response = requests.post(f"{API_BASE_URL}/books/",
