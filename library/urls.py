@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import return_book
 
 app_name = 'library'  # Add this line to define the app name
 
@@ -11,7 +10,5 @@ urlpatterns = [
     path('logout', views.logout, name='logout'),
     path('register', views.register, name='register'),
     path('books/<int:book_id>', views.book_detail, name='book_detail'),
-    path('borrows', views.borrows, name='borrows'),
-    path('borrows/<int:borrow_id>', views.borrows, name='delete_borrow'),
-    path('return-book/<int:borrow_id>', return_book, name='return_book'),
+    path('borrows', views.borrows, name='borrows')
 ]

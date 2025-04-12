@@ -59,38 +59,44 @@ select option{transition:background-color .3s ease}
       <tbody>
         {% for borrow in borrows %}
         <tr>
-          <td>{{ borrow.location }}</td>
-          <td>{{ borrow.user_username }}</td>
-          <td>{{ borrow.book_title }}</td>
-          <td>{{ borrow.book_author }}</td>
-          <td>{{ borrow.book_published_date }}</td>
-          <td>{{ borrow.book_genre }}</td>
-          <td>{{ borrow.book_isbn }}</td>
-          <td>{{ borrow.book_language }}</td>
-          <td>{{ borrow.return_date }}</td>
+            <td>{{ borrow.available_book.location }}</td>
+            <td>{{ borrow.user.username }}</td>
+            <td>{{ borrow.available_book.book.title }}</td>
+            <td>{{ borrow.available_book.book.author }}</td>
+            <td>{{ borrow.available_book.book.published_date }}</td>
+            <td>{{ borrow.available_book.book.genre }}</td>
+            <td>{{ borrow.available_book.book.isbn }}</td>
+            <td>{{ borrow.available_book.book.language }}</td>
+            <td>{{ borrow.return_date }}</td>
+
           <td>
             {% if borrow.date_returned %}
               {{ borrow.date_returned }}
             {% else %}
-              <form method="POST" action="{% url 'library:return_book' borrow.id %}">
+              <form method="POST" action="{% url 'library:borrows'%}">
                 {% csrf_token %}
-                <input type="hidden" name="user" value="{{ borrow.user }}">
-                <input type="hidden" name="available_book" value="{{ borrow.available_book }}">
+              <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="id" value="{{ borrow.id }}">
+                <input type="hidden" name="user" value="{{ borrow.user.id }}">
+                <input type="hidden" name="available_book" value="{{ borrow.available_book.id }}">
                 <input type="hidden" name="borrow_date" value="{{ borrow.borrow_date }}">
                 <input type="hidden" name="return_date" value="{{ borrow.return_date }}">
+                <input type="hidden" name="date_returned" value="" id="date_returned">
+                <script>document.getElementById('date_returned').value = new Date().toISOString().split('T')[0];</script>
                 <button class="button" type="submit">Return</button>
               </form>
             {% endif %}
           </td>
           <td>
-            <form method="POST" action="{% url 'library:delete_borrow' borrow.id %}">
+            <form method="POST" action="{% url 'library:borrows' %}">
               {% csrf_token %}
               <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="id" value="{{ borrow.id }}">
               <button class="button" type="submit">Delete</button>
             </form>
           </td>
           <td>
-            <button class="button" onclick="openUpdateModal({{ borrow.id }},'{{ borrow.user }}','{{ borrow.available_book }}','{{ borrow.borrow_date|default_if_none:'' }}','{{ borrow.return_date|default_if_none:'' }}','{{ borrow.date_returned|default_if_none:'' }}')">Update</button>
+              <button class="button" onclick="openUpdateModal({{ borrow.id }},'{{ borrow.user.id }}','{{ borrow.available_book.id }}','{{ borrow.borrow_date|default_if_none:'' }}','{{ borrow.return_date|default_if_none:'' }}','{{ borrow.date_returned|default_if_none:'' }}','{{ borrow.available_book.location }}')">Update</button>
           </td>
         </tr>
 <div id="modal-{{ borrow.id }}" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center">
@@ -115,7 +121,7 @@ select option{transition:background-color .3s ease}
           <select name="location" id="location-{{ borrow.id }}" required onchange="filterModalBooks({{ borrow.id }})">
             <option value="">Select Location</option>
             {% for loc in locations %}
-              <option value="{{ loc }}" {% if borrow.location == loc %}selected{% endif %}>{{ loc }}</option>
+              <option value="{{ loc }}" {% if borrow.available_book.location == loc %}selected{% endif %}>{{ loc }}</option>
             {% endfor %}
           </select>
         </div>
@@ -128,7 +134,7 @@ select option{transition:background-color .3s ease}
             <option value="">Select Book</option>
             {% for ab in availablebooks %}
               {% if ab.copy_is_available %}
-                <option value="{{ ab.id }}" data-location="{{ ab.location }}" {% if borrow.available_book == ab.id %}selected{% endif %}>{{ ab.book_title }}</option>
+                <option value="{{ ab.id }}" data-location="{{ ab.location }}" {% if borrow.available_book.id == ab.id %}selected{% endif %}>{{ ab.book.title }}</option>
               {% endif %}
             {% endfor %}
           </select>
@@ -136,14 +142,14 @@ select option{transition:background-color .3s ease}
 
         <div class="w-col">
           <label for="borrow-{{ borrow.id }}">Borrow Date</label>
-          <input type="date" name="borrow_date" id="borrow-{{ borrow.id }}" value="{{ borrow.borrow_date }}">
+          <input type="date" name="borrow_date" id="borrow-{{ borrow.id }}" value="{{ borrow.borrow_date }}" required>
         </div>
       </div>
 
       <div class="w-row">
         <div class="w-col">
           <label for="return-{{ borrow.id }}">Return Date</label>
-          <input type="date" name="return_date" id="return-{{ borrow.id }}" value="{{ borrow.return_date }}">
+          <input type="date" name="return_date" id="return-{{ borrow.id }}" value="{{ borrow.return_date }}" required>
         </div>
 
         <div class="w-col">
@@ -196,14 +202,14 @@ select option{transition:background-color .3s ease}
     <div class="w-row">
       <div class="w-col">
         <label for="available_book">Available Book:</label>
-        <select id="available_book" name="available_book" required>
-          <option value="">Select Book</option>
-          {% for ab in availablebooks %}
-            {% if ab.copy_is_available %}
-              <option value="{{ ab.id }}" data-location="{{ ab.location }}" style="display:none">{{ ab.book_title }}</option>
-            {% endif %}
-          {% endfor %}
-        </select>
+            <select id="available_book" name="available_book" required>
+              <option value="">Select Book</option>
+              {% for ab in availablebooks %}
+                {% if ab.copy_is_available %}
+                  <option value="{{ ab.id }}" data-location="{{ ab.location }}" style="display:none">{{ ab.book.title }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
       </div>
       <div class="w-col">
         <label for="return_date">Return Date:</label>
@@ -215,8 +221,18 @@ select option{transition:background-color .3s ease}
     </div>
   </form>
 </div>
-
 <script>
+function filterModalBooks(id) {
+  const locationValue = document.getElementById(`location-${id}`).value.toLowerCase();
+  const bookSelect = document.getElementById(`book-${id}`);
+  Array.from(bookSelect.options).forEach(opt => {
+    if (!opt.value) return;
+    opt.style.display = opt.dataset.location.toLowerCase() === locationValue ? 'block' : 'none';
+  });
+  if (bookSelect.selectedOptions.length && bookSelect.selectedOptions[0].style.display === 'none') {
+    bookSelect.value = '';
+  }
+}
 function filterTable(){
 const l=document.getElementById('searchLocation').value.toUpperCase(),u=document.getElementById('searchUser').value.toUpperCase(),t=document.getElementById('searchTitle').value.toUpperCase(),a=document.getElementById('searchAuthor').value.toUpperCase(),g=document.getElementById('searchGenre').value.toUpperCase(),i=document.getElementById('searchISBN').value.toUpperCase(),lan=document.getElementById('searchLanguage').value.toUpperCase(),r=document.getElementById('searchReturnDate').value.toUpperCase();const rows=document.querySelector("#borrowTable tbody").rows;for(let x=0;x<rows.length;x++){const row=rows[x],lc=row.cells[0].textContent.toUpperCase(),uc=row.cells[1].textContent.toUpperCase(),tc=row.cells[2].textContent.toUpperCase(),ac=row.cells[3].textContent.toUpperCase(),gc=row.cells[5].textContent.toUpperCase(),ic=row.cells[6].textContent.toUpperCase(),lcg=row.cells[7].textContent.toUpperCase(),rc=row.cells[8].textContent.toUpperCase();row.style.display=(lc.indexOf(l)>-1||!l)&&(uc.indexOf(u)>-1||!u)&&(tc.indexOf(t)>-1||!t)&&(ac.indexOf(a)>-1||!a)&&(gc.indexOf(g)>-1||!g)&&(ic.indexOf(i)>-1||!i)&&(lcg.indexOf(lan)>-1||!lan)&&(rc.indexOf(r)>-1||!r)?"":"none"}}
 
@@ -226,15 +242,15 @@ document.addEventListener('DOMContentLoaded',()=>{const returnDateInput=document
 
 function openUpdateModal(id,u,b,bd,rd,dret){document.getElementById(`user-${id}`).value=u||'';document.getElementById(`book-${id}`).value=b||'';document.getElementById(`borrow-${id}`).value=bd||'';document.getElementById(`return-${id}`).value=rd||'';document.getElementById(`returned-${id}`).value=dret||'';document.getElementById(`modal-${id}`).style.display='flex'}
 function closeModal(id){document.getElementById(`modal-${id}`).style.display='none'}
-function openUpdateModal(id, userId, bookId, borrowDate, returnDate, returnedDate, location) {
-  document.getElementById(`user-${id}`).value = userId || '';
-  document.getElementById(`borrow-${id}`).value = borrowDate || '';
-  document.getElementById(`return-${id}`).value = returnDate || '';
-  document.getElementById(`returned-${id}`).value = returnedDate || '';
-  document.getElementById(`location-${id}`).value = location || '';
-  filterModalBooks(id);
-  document.getElementById(`book-${id}`).value = bookId || '';
-  document.getElementById(`modal-${id}`).style.display = 'flex';
+function openUpdateModal(id,u,b,bd,rd,dret,loc){
+    document.getElementById(`user-${id}`).value=u||''
+    document.getElementById(`borrow-${id}`).value=bd||''
+    document.getElementById(`return-${id}`).value=rd||''
+    document.getElementById(`returned-${id}`).value=dret||''
+    document.getElementById(`location-${id}`).value=loc||''
+    filterModalBooks(id)
+    document.getElementById(`book-${id}`).value=b||''
+    document.getElementById(`modal-${id}`).style.display='flex'
 }
 
 function filterModalBooks(id) {
