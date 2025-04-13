@@ -3,6 +3,189 @@
 {% block content %}
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  animation: modal-pop-in 0.4s ease-out;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  width: 90%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: content-pop-in 0.4s ease-out;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-column {
+  width: 100%;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: label-appear 0.3s forwards;
+}
+
+.form-label:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: input-slide-up 0.3s forwards;
+}
+
+.form-input:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  width: 48%;
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: button-pop-in 0.3s forwards;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn:nth-child(1) {
+  animation-delay: 0.3s;
+}
+
+@keyframes modal-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes content-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes label-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes input-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes button-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-field {
+  width: 100%;
+  padding: .75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: .375rem;
+  margin-top: .25rem;
+  transition: all .3s ease;
+}
+.input-field:hover,
+.input-field:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, .2);
+  transform: scale(1.02);
+}
+.input-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: .25rem;
+  color: #333;
+}
+.w-form-update {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: .5rem;
+  width: 90%;
+  max-width: 500px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .1);
+}
 .filters-wrapper{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
 .filters-wrapper input{padding:.6rem .75rem;font-size:.9rem;border:1px solid #ccc;border-radius:.375rem;transition:all .3s ease}
 .filters-wrapper input:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 2px rgba(99,102,241,.2);transform:scale(1.02)}
@@ -28,14 +211,13 @@ select option{transition:background-color .3s ease}
 
   <div class="w-form">
     <div class="filters-wrapper">
+        <input type="text" id="searchUser" placeholder="Username" onkeyup="filterTable()">
       <input type="text" id="searchLocation" placeholder="Location" onkeyup="filterTable()">
-      <input type="text" id="searchUser" placeholder="User" onkeyup="filterTable()">
       <input type="text" id="searchTitle" placeholder="Title" onkeyup="filterTable()">
-      <input type="text" id="searchAuthor" placeholder="Author" onkeyup="filterTable()">
-      <input type="text" id="searchGenre" placeholder="Genre" onkeyup="filterTable()">
       <input type="text" id="searchISBN" placeholder="ISBN" onkeyup="filterTable()">
-      <input type="text" id="searchLanguage" placeholder="Language" onkeyup="filterTable()">
+      <input type="text" id="serachBorrowDate" placeholder="Borrow Date" onkeyup="filterTable()">
       <input type="text" id="searchReturnDate" placeholder="Return Date" onkeyup="filterTable()">
+        <input type="text" id="searchDateReturned" placeholder="Date Returned" onkeyup="filterTable()">
     </div>
   </div>
 
@@ -43,14 +225,11 @@ select option{transition:background-color .3s ease}
     <table id="borrowTable">
       <thead>
         <tr>
+          <th>Username</th>
           <th>Location</th>
-          <th>User</th>
           <th>Book Title</th>
-          <th>Author</th>
-          <th>Published Date</th>
-          <th>Genre</th>
           <th>ISBN</th>
-          <th>Language</th>
+          <th>Borrow Date</th>
           <th>Return Date</th>
           <th>Date Returned</th>
           <th colspan="2">Action</th>
@@ -59,14 +238,11 @@ select option{transition:background-color .3s ease}
       <tbody>
         {% for borrow in borrows %}
         <tr>
-            <td>{{ borrow.available_book.location }}</td>
             <td>{{ borrow.user.username }}</td>
+            <td>{{ borrow.available_book.location }}</td>
             <td>{{ borrow.available_book.book.title }}</td>
-            <td>{{ borrow.available_book.book.author }}</td>
-            <td>{{ borrow.available_book.book.published_date }}</td>
-            <td>{{ borrow.available_book.book.genre }}</td>
             <td>{{ borrow.available_book.book.isbn }}</td>
-            <td>{{ borrow.available_book.book.language }}</td>
+            <td>{{ borrow.borrow_date }}</td>
             <td>{{ borrow.return_date }}</td>
 
           <td>
@@ -99,26 +275,26 @@ select option{transition:background-color .3s ease}
               <button class="button" onclick="openUpdateModal({{ borrow.id }},'{{ borrow.user.id }}','{{ borrow.available_book.id }}','{{ borrow.borrow_date|default_if_none:'' }}','{{ borrow.return_date|default_if_none:'' }}','{{ borrow.date_returned|default_if_none:'' }}','{{ borrow.available_book.location }}')">Update</button>
           </td>
         </tr>
-<div id="modal-{{ borrow.id }}" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center">
-  <div class="w-form" style="background:#fff;padding:2rem;border-radius:.5rem;width:90%;max-width:500px">
+<div id="modal-{{ borrow.id }}" class="modal">
+  <div class="modal-content">
     <form method="POST" action="{% url 'library:borrows' %}">
       {% csrf_token %}
       <input type="hidden" name="_method" value="PUT">
       <input type="hidden" name="id" value="{{ borrow.id }}">
 
-      <div class="w-row">
-        <div class="w-col">
-          <label for="user-{{ borrow.id }}">User</label>
-          <select name="user" id="user-{{ borrow.id }}" required>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="user-{{ borrow.id }}" class="form-label">User</label>
+          <select name="user" id="user-{{ borrow.id }}" class="form-input" required>
             {% for user in users %}
               <option value="{{ user.id }}" {% if borrow.user == user.id %}selected{% endif %}>{{ user.username }}</option>
             {% endfor %}
           </select>
         </div>
 
-        <div class="w-col">
-          <label for="location-{{ borrow.id }}">Location</label>
-          <select name="location" id="location-{{ borrow.id }}" required onchange="filterModalBooks({{ borrow.id }})">
+        <div class="form-column">
+          <label for="location-{{ borrow.id }}" class="form-label">Location</label>
+          <select name="location" id="location-{{ borrow.id }}" class="form-input" required onchange="filterModalBooks({{ borrow.id }})">
             <option value="">Select Location</option>
             {% for loc in locations %}
               <option value="{{ loc }}" {% if borrow.available_book.location == loc %}selected{% endif %}>{{ loc }}</option>
@@ -127,10 +303,10 @@ select option{transition:background-color .3s ease}
         </div>
       </div>
 
-      <div class="w-row">
-        <div class="w-col">
-          <label for="book-{{ borrow.id }}">Available Book</label>
-          <select name="available_book" id="book-{{ borrow.id }}" required>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="book-{{ borrow.id }}" class="form-label">Available Book</label>
+          <select name="available_book" id="book-{{ borrow.id }}" class="form-input" required>
             <option value="">Select Book</option>
             {% for ab in availablebooks %}
               {% if ab.copy_is_available %}
@@ -140,35 +316,32 @@ select option{transition:background-color .3s ease}
           </select>
         </div>
 
-        <div class="w-col">
-          <label for="borrow-{{ borrow.id }}">Borrow Date</label>
-          <input type="date" name="borrow_date" id="borrow-{{ borrow.id }}" value="{{ borrow.borrow_date }}" required>
+        <div class="form-column">
+          <label for="borrow-{{ borrow.id }}" class="form-label">Borrow Date</label>
+          <input type="date" name="borrow_date" id="borrow-{{ borrow.id }}" class="form-input" value="{{ borrow.borrow_date }}" required>
         </div>
       </div>
 
-      <div class="w-row">
-        <div class="w-col">
-          <label for="return-{{ borrow.id }}">Return Date</label>
-          <input type="date" name="return_date" id="return-{{ borrow.id }}" value="{{ borrow.return_date }}" required>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="return-{{ borrow.id }}" class="form-label">Return Date</label>
+          <input type="date" name="return_date" id="return-{{ borrow.id }}" class="form-input" value="{{ borrow.return_date }}" required>
         </div>
 
-        <div class="w-col">
-          <label for="returned-{{ borrow.id }}">Date Returned</label>
-          <input type="date" name="date_returned" id="returned-{{ borrow.id }}" value="{{ borrow.date_returned }}">
+        <div class="form-column">
+          <label for="returned-{{ borrow.id }}" class="form-label">Date Returned</label>
+          <input type="date" name="date_returned" id="returned-{{ borrow.id }}" class="form-input" value="{{ borrow.date_returned }}">
         </div>
       </div>
 
-      <div class="w-row" style="justify-content:space-between">
-        <div class="w-col">
-          <button class="button" type="submit" style="width:100%">Save</button>
-        </div>
-        <div class="w-col">
-          <button class="button" type="button" onclick="closeModal({{ borrow.id }})" style="width:100%">Cancel</button>
-        </div>
+      <div class="form-row form-actions">
+        <button class="button" type="submit">Save</button>
+        <button class="button" type="button" onclick="closeModal({{ borrow.id }})">Cancel</button>
       </div>
     </form>
   </div>
 </div>
+
         {% empty %}
         <tr><td colspan="12">No borrowed books.</td></tr>
         {% endfor %}
@@ -233,13 +406,57 @@ function filterModalBooks(id) {
     bookSelect.value = '';
   }
 }
-function filterTable(){
-const l=document.getElementById('searchLocation').value.toUpperCase(),u=document.getElementById('searchUser').value.toUpperCase(),t=document.getElementById('searchTitle').value.toUpperCase(),a=document.getElementById('searchAuthor').value.toUpperCase(),g=document.getElementById('searchGenre').value.toUpperCase(),i=document.getElementById('searchISBN').value.toUpperCase(),lan=document.getElementById('searchLanguage').value.toUpperCase(),r=document.getElementById('searchReturnDate').value.toUpperCase();const rows=document.querySelector("#borrowTable tbody").rows;for(let x=0;x<rows.length;x++){const row=rows[x],lc=row.cells[0].textContent.toUpperCase(),uc=row.cells[1].textContent.toUpperCase(),tc=row.cells[2].textContent.toUpperCase(),ac=row.cells[3].textContent.toUpperCase(),gc=row.cells[5].textContent.toUpperCase(),ic=row.cells[6].textContent.toUpperCase(),lcg=row.cells[7].textContent.toUpperCase(),rc=row.cells[8].textContent.toUpperCase();row.style.display=(lc.indexOf(l)>-1||!l)&&(uc.indexOf(u)>-1||!u)&&(tc.indexOf(t)>-1||!t)&&(ac.indexOf(a)>-1||!a)&&(gc.indexOf(g)>-1||!g)&&(ic.indexOf(i)>-1||!i)&&(lcg.indexOf(lan)>-1||!lan)&&(rc.indexOf(r)>-1||!r)?"":"none"}}
+function filterTable() {
+  const u = document.getElementById('searchUser').value.toUpperCase(),
+        l = document.getElementById('searchLocation').value.toUpperCase(),
+        t = document.getElementById('searchTitle').value.toUpperCase(),
+        i = document.getElementById('searchISBN').value.toUpperCase(),
+        bd = document.getElementById('serachBorrowDate').value.toUpperCase(),
+        r = document.getElementById('searchReturnDate').value.toUpperCase(),
+        dr = document.getElementById('searchDateReturned').value.toUpperCase();
 
-document.getElementById('location').addEventListener('change',function(){let loc=this.value.toLowerCase(),bookSelect=document.getElementById('available_book');Array.from(bookSelect.options).forEach(opt=>{if(!opt.value)return;opt.style.display=opt.dataset.location.toLowerCase()===loc?'block':'none'});bookSelect.value=''})
+  const rows = document.querySelector("#borrowTable tbody").rows;
 
-document.addEventListener('DOMContentLoaded',()=>{const returnDateInput=document.getElementById('return_date');const today=new Date();today.setDate(today.getDate()+5);const day=String(today.getDate()).padStart(2,'0');const month=String(today.getMonth()+1).padStart(2,'0');const year=today.getFullYear();returnDateInput.value=`${year}-${month}-${day}`})
+  for (let x = 0; x < rows.length; x++) {
+    const row = rows[x];
+    const uc = row.cells[0].textContent.toUpperCase(),
+          lc = row.cells[1].textContent.toUpperCase(),
+          tc = row.cells[2].textContent.toUpperCase(),
+          ic = row.cells[3].textContent.toUpperCase(),
+          bdc = row.cells[4].textContent.toUpperCase(),
+          rc = row.cells[5].textContent.toUpperCase(),
+          drc = row.cells[6].textContent.toUpperCase();
 
+    row.style.display =
+      (uc.indexOf(u) > -1 || !u) &&
+      (lc.indexOf(l) > -1 || !l) &&
+      (tc.indexOf(t) > -1 || !t) &&
+      (ic.indexOf(i) > -1 || !i) &&
+      (bdc.indexOf(bd) > -1 || !bd) &&
+      (rc.indexOf(r) > -1 || !r) &&
+      (drc.indexOf(dr) > -1 || !dr) ? "" : "none";
+  }
+}
+
+document.getElementById('location').addEventListener('change', function() {
+  let loc = this.value.toLowerCase();
+  let bookSelect = document.getElementById('available_book');
+  Array.from(bookSelect.options).forEach(opt => {
+    if (!opt.value) return;
+    opt.style.display = opt.dataset.location.toLowerCase() === loc ? 'block' : 'none';
+  });
+  bookSelect.value = '';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const returnDateInput = document.getElementById('return_date');
+  const today = new Date();
+  today.setDate(today.getDate() + 5);
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  returnDateInput.value = `${year}-${month}-${day}`;
+});
 function openUpdateModal(id,u,b,bd,rd,dret){document.getElementById(`user-${id}`).value=u||'';document.getElementById(`book-${id}`).value=b||'';document.getElementById(`borrow-${id}`).value=bd||'';document.getElementById(`return-${id}`).value=rd||'';document.getElementById(`returned-${id}`).value=dret||'';document.getElementById(`modal-${id}`).style.display='flex'}
 function closeModal(id){document.getElementById(`modal-${id}`).style.display='none'}
 function openUpdateModal(id,u,b,bd,rd,dret,loc){
