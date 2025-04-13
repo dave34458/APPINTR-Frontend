@@ -1,0 +1,348 @@
+{% extends "library/base.html" %}
+{% block title %}Available Books - Educare{% endblock %}
+{% block content %}
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  animation: modal-pop-in 0.4s ease-out;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  width: 90%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: content-pop-in 0.4s ease-out;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-column {
+  width: 100%;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: label-appear 0.3s forwards;
+}
+
+.form-label:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: input-slide-up 0.3s forwards;
+}
+
+.form-input:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  width: 48%;
+  padding: 0.75rem;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: button-pop-in 0.3s forwards;
+}
+
+.btn:hover {
+  background-color: #4338ca;
+}
+
+.btn:nth-child(1) {
+  animation-delay: 0.3s;
+}
+
+@keyframes modal-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes content-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes label-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes input-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes button-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-field {
+  width: 100%;
+  padding: .75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: .375rem;
+  margin-top: .25rem;
+    height: 57%;
+  transition: all .3s ease;
+}
+.input-field:hover,
+.input-field:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, .2);
+  transform: scale(1.02);
+}
+.input-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: .25rem;
+  color: #333;
+}
+.w-form-update {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: .5rem;
+  width: 90%;
+  max-width: 500px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .1);
+}
+.filters-wrapper{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+.filters-wrapper input{padding:.6rem .75rem;font-size:.9rem;border:1px solid #ccc;border-radius:.375rem;transition:all .3s ease}
+.filters-wrapper input:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 2px rgba(99,102,241,.2);transform:scale(1.02)}
+.filters-wrapper input:hover{transform:scale(1.1)}
+.w-table{overflow-x:auto;display:block;max-height:350px;border:1px solid #ddd;border-radius:.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:2rem}
+.w-table table{width:1%;border-collapse:collapse;min-width:100px}
+.w-table thead th{position:sticky;top:0;background-color:#f9fafb;z-index:1;padding:.75rem;text-align:left;font-weight:600;border-bottom:1px solid #e5e7eb}
+.w-table tbody td{padding:.75rem;border-bottom:1px solid #f1f1f1}
+.button{padding:.5rem .9rem;background-color:#4f46e5;color:white;border:none;border-radius:.375rem;cursor:pointer;transition:all .3s ease;transform:scale(1)}
+.button:hover{background-color:#4338ca;transform:scale(1.2)}
+.button:active{transform:scale(1.01)}
+.button-wrapper{margin-top:1rem}
+.w-form select,.w-form input[type="date"]{width:100%;padding:.5rem .75rem;border-radius:.375rem;border:1px solid #ccc;margin-top:.25rem;transition:all .3s ease}
+.w-form select:hover,.w-form input[type="date"]:hover{transform:scale(1.02)}
+.w-form select:focus,.w-form input[type="date"]:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 2px rgba(99,102,241,.2);transform:scale(1.02)}
+.w-row{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}
+.w-col{flex:1 1 300px}
+select option{transition:background-color .3s ease}
+</style>
+
+<div class="w-container">
+  <h1 style="margin-bottom:1rem;">Available Books</h1>
+
+  <div class="w-form">
+    <div class="filters-wrapper">
+      <input type="text" id="searchTitle" placeholder="Title" onkeyup="filterTable()">
+      <input type="text" id="searchLocation" placeholder="Location" onkeyup="filterTable()">
+      <input type="text" id="searchISBN" placeholder="ISBN" onkeyup="filterTable()">
+    </div>
+  </div>
+
+  <div class="w-table">
+    <table id="availableBookTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Location</th>
+          <th>ISBN</th>
+          <th>Is Available</th>
+          <th colspan="2">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in available_books %}
+        <tr>
+          <td>{{ book.id }}</td>
+          <td>{{ book.book.title }}</td>
+          <td>{{ book.location }}</td>
+          <td>{{ book.book.isbn }}</td>
+          <td>{{ book.copy_is_available }}</td>
+          <td>
+            <form method="POST" action="{% url 'library:available_books'%}">
+              {% csrf_token %}
+              <input type="hidden" name="_method" value="DELETE">
+              <input type="hidden" name="book_id" value="{{ book.book.id }}">
+              <input type="hidden" name="available_book_id" value="{{ book.id }}">
+              <button class="button" type="submit">Delete</button>
+            </form>
+          </td>
+          <td>
+            <button class="button" onclick="openUpdateModal({{ book.id }}, '{{ book.location }}')">Update</button>
+          </td>
+        </tr>
+
+        <div id="modal-{{ book.id }}" class="modal">
+          <div class="modal-content">
+            <form method="POST" action="{% url 'library:available_books' %}">
+              {% csrf_token %}
+              <input type="hidden" name="_method" value="PUT">
+              <input type="hidden" name="book_id" value="{{ book.book.id }}">
+              <input type="hidden" name="available_book_id" value="{{ book.id }}">
+
+              <div class="form-row">
+                <div class="form-column">
+                  <label for="book" class="form-label">Book</label>
+                  <select name="book" id="book" class="form-input" required>
+                    {% for actualbook in books %}
+                      <option value="{{ actualbook.id }}" {% if book.book.id == actualbook.id %}selected{% endif %}>{{ actualbook.title }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-column">
+                  <label for="location-{{ book.id }}" class="form-label">Location</label>
+                  <input type="text" name="location" id="location-{{ book.id }}" class="form-input" value="{{ book.location }}" required>
+                </div>
+              </div>
+
+              <div class="form-row form-actions">
+                <button class="button" type="submit">Save</button>
+                <button class="button" type="button" onclick="closeModal({{ book.id }})">Cancel</button>
+              </div>
+              <div class="form-row form-actions">
+              </div>
+            </form>
+          </div>
+        </div>
+        {% empty %}
+        <tr><td colspan="6">No available books.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Add a New Available Book</h2>
+<form method="POST" class="w-form">
+  {% csrf_token %}
+  <div class="w-row">
+    <div class="w-col">
+      <label for="location">Location:</label>
+      <input type="text" id="location" name="location" class="input-field" required>
+    </div>
+    <div class="w-col">
+      <label for="book">Book Title:</label>
+      <select id="book" name="book" class="input-field" required>
+        <option value="">Select Book</option>
+        {% for book in books %}
+          <option value="{{ book.id }}">{{ book.title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="button-wrapper">
+    <button type="submit" class="button">Add Book</button>
+  </div>
+</form>
+
+<script>
+function filterTable() {
+  const location = document.getElementById('searchLocation').value.toUpperCase();
+  const title = document.getElementById('searchTitle').value.toUpperCase();
+  const isbn = document.getElementById('searchISBN').value.toUpperCase();
+
+  const rows = document.querySelector("#availableBookTable tbody").rows;
+
+  for (let x = 0; x < rows.length; x++) {
+    const row = rows[x];
+    const t = row.cells[1].textContent.toUpperCase();
+    const loc = row.cells[2].textContent.toUpperCase();
+    const i = row.cells[3].textContent.toUpperCase();
+
+    row.style.display = (loc.indexOf(location) > -1 || !location) &&
+                       (t.indexOf(title) > -1 || !title) &&
+                       (i.indexOf(isbn) > -1 || !isbn) ? "" : "none";
+  }
+}
+
+function openUpdateModal(id, location) {
+  document.getElementById(`location-${id}`).value = location || '';
+  document.getElementById(`modal-${id}`).style.display = 'flex';
+}
+
+function closeModal(id) {
+  document.getElementById(`modal-${id}`).style.display = 'none';
+}
+</script>
+
+{% endblock %}

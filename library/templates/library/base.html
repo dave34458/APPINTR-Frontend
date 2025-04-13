@@ -51,11 +51,11 @@
                     </a>
                     <a href="{% url 'library:borrows' %}" class="navlink w-inline-block">
                         <img src="{% static 'icons/image4.svg' %}" width="22" class="icon">
-                        <div>Borrows</div>
+                        <div>Manage Borrows</div>
                     </a>
-                    <a href="News/news.html" class="navlink w-inline-block">
+                    <a href="{% url 'library:available_books' %}" class="navlink w-inline-block">
                         <img src="{% static 'icons/image5.svg' %}" width="22" class="icon">
-                        <div>News</div>
+                        <div>Manage Available Books</div>
                     </a>
                     {% if is_authenticated %}
                         <a href="{% url 'library:logout' %}" class="navlink w-inline-block">

@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
+from datetime import date
 
 API_BASE_URL = 'http://127.0.0.1:8000/api'
 
@@ -87,7 +88,7 @@ def book_detail(request, book_id):
     if book_response.status_code!=200:
         return JsonResponse({'error':'Failed to fetch book'},status=500)
     book=book_response.json()
-    available_books_response=requests.get(f"{API_BASE_URL}/books/{book_id}/availablebooks",headers=headers)
+    available_books_response=requests.get(f"{API_BASE_URL}/books/{book_id}/available-books",headers=headers)
     if available_books_response.status_code!=200:
         return JsonResponse({'error':'Failed to fetch available books'},status=500)
     available_books=available_books_response.json()
@@ -119,7 +120,6 @@ def borrows(request):
         elif method=='PUT':
             r=requests.put(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows/{borrow_id}',headers=headers,data=payload)
         else:
-            from datetime import date
             payload['borrow_date']=str(date.today())
             r=requests.post(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows',headers=headers,data=payload)
         return redirect('library:borrows') if r.status_code in [200,201,204] else HttpResponse(r.text,status=r.status_code)
@@ -128,8 +128,30 @@ def borrows(request):
     users = requests.get(f"{API_BASE_URL}/users", headers=headers).json()
     data = {'borrows': borrows, 'availablebooks': availablebooks, 'users': users}
     locations=sorted({ab.get('location') for ab in data['availablebooks'] if ab.get('location')})
-    return render(request,'library/borrows.html',data|{'locations':locations})
+    return render(request,'library/borrows.html',data|{'locations':locations,'is_authenticated': bool(request.COOKIES.get("auth_token"))})
 
+@staff_required
+def available_books(request):
+    headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}
+    if request.method=='POST':
+        method=request.POST.get('_method')
+        book_id=request.POST.get('book_id')
+        available_book_id=request.POST.get('available_book_id')
+        payload = {
+            'book': request.POST.get('book'),
+            'location': request.POST.get('location')
+        }
+        if method=='DELETE':
+            r=requests.delete(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}',headers=headers)
+        elif method=='PUT':
+            r=requests.put(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}',headers=headers,data=payload)
+        else:
+            r=requests.post(f'{API_BASE_URL}/books/{book_id}/available-books',headers=headers,data=payload)
+        return redirect('library:available_books') if r.status_code in [200,201,204] else HttpResponse(r.text,status=r.status_code)
+    books = requests.get(f"{API_BASE_URL}/books", headers=headers).json()
+    available_books = requests.get(f"{API_BASE_URL}/available-books", headers=headers).json()
+    data = {'available_books': available_books, 'books': books,'is_authenticated': bool(request.COOKIES.get("auth_token"))}
+    return render(request,'library/available-books.html',data)
 
 def create_book(request):
     response = requests.post(f"{API_BASE_URL}/books/",
