@@ -249,7 +249,7 @@ select option{transition:background-color .3s ease}
             {% if borrow.date_returned %}
               {{ borrow.date_returned }}
             {% else %}
-              <form method="POST" action="{% url 'library:borrows'%}">
+              <form method="POST" action="{% url 'library:borrows' %}">
                 {% csrf_token %}
               <input type="hidden" name="_method" value="PUT">
                 <input type="hidden" name="book_id" value="{{ borrow.available_book.book.id }}">

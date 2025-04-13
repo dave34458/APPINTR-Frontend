@@ -71,8 +71,6 @@ def books(request):
         'range_of_stars': range_of_stars
     })
 
-
-
 def book_detail(request, book_id):
     token=request.COOKIES.get('auth_token')
     headers={'Authorization':f'Token {token}'} if token else {}
@@ -101,8 +99,6 @@ def book_detail(request, book_id):
     context={'book':book,'available_books':available_books,'reviews':reviews,'overall_rating':overall_rating,'is_authenticated':bool(token)}
     return render(request,'library/book-detail.html',context)
 
-
-
 @staff_required
 def borrows(request):
     headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}
@@ -119,15 +115,18 @@ def borrows(request):
             'date_returned': request.POST.get('date_returned')
         }
         if method=='DELETE':
-            r=requests.delete(f'{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/{borrow_id}',headers=headers)
+            r=requests.delete(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows/{borrow_id}',headers=headers)
         elif method=='PUT':
-            r=requests.put(f'{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/{borrow_id}',headers=headers,data=payload)
+            r=requests.put(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows/{borrow_id}',headers=headers,data=payload)
         else:
             from datetime import date
             payload['borrow_date']=str(date.today())
-            r=requests.post(f'{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows',headers=headers,data=payload)
+            r=requests.post(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows',headers=headers,data=payload)
         return redirect('library:borrows') if r.status_code in [200,201,204] else HttpResponse(r.text,status=r.status_code)
-    data={ep:requests.get(f"{API_BASE_URL}/{ep}",headers=headers).json() for ep in ['borrows','availablebooks','users']}
+    borrows = requests.get(f"{API_BASE_URL}/borrows", headers=headers).json()
+    availablebooks = requests.get(f"{API_BASE_URL}/available-books", headers=headers).json()
+    users = requests.get(f"{API_BASE_URL}/users", headers=headers).json()
+    data = {'borrows': borrows, 'availablebooks': availablebooks, 'users': users}
     locations=sorted({ab.get('location') for ab in data['availablebooks'] if ab.get('location')})
     return render(request,'library/borrows.html',data|{'locations':locations})
 
