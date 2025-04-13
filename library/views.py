@@ -109,9 +109,15 @@ def borrows(request):
     if request.method=='POST':
         method=request.POST.get('_method')
         book_id=request.POST.get('book_id')
-        available_book_id=request.POST.get('available_book_id') or request.POST.get('available_book')
+        available_book_id=request.POST.get('available_book_id')
         borrow_id=request.POST.get('borrow_id')
-        payload={k:request.POST.get(k) for k in ['user','available_book','return_date','borrow_date','date_returned']}
+        payload = {
+            'user': request.POST.get('user'),
+            'available_book': request.POST.get('available_book'),
+            'return_date': request.POST.get('return_date'),
+            'borrow_date': request.POST.get('borrow_date'),
+            'date_returned': request.POST.get('date_returned')
+        }
         if method=='DELETE':
             r=requests.delete(f'{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/{borrow_id}',headers=headers)
         elif method=='PUT':

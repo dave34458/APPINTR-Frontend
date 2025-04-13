@@ -240,7 +240,7 @@ select option{transition:background-color .3s ease}
         <tr>
             <td>{{ borrow.user.username }}</td>
             <td>{{ borrow.available_book.location }}</td>
-            <td>{{ borrow.available_book.book.title }}</td>
+            <td>{{ borrow.available_book.id }} - {{ borrow.available_book.book.title }}</td>
             <td>{{ borrow.available_book.book.isbn }}</td>
             <td>{{ borrow.borrow_date }}</td>
             <td>{{ borrow.return_date }}</td>
@@ -281,6 +281,7 @@ select option{transition:background-color .3s ease}
         </tr>
 <div id="modal-{{ borrow.id }}" class="modal">
   <div class="modal-content">
+  <!---------------------------------------------------------------------------------------------------------------->
     <form method="POST" action="{% url 'library:borrows' %}">
       {% csrf_token %}
       <input type="hidden" name="_method" value="PUT">
@@ -316,13 +317,11 @@ select option{transition:background-color .3s ease}
             <option value="">Select Book</option>
             {% for ab in availablebooks %}
               {% if ab.copy_is_available %}
-                <option name="available_book_id" value="{{ ab.id }}" data-location="{{ ab.location }}" {% if borrow.available_book.id == ab.id %}selected{% endif %}>{{ ab.book.title }}</option>
+                <option value="{{ ab.id }}" data-location="{{ ab.location }}" {% if borrow.available_book.id == ab.id %}selected{% endif %}>{{ ab.id }} - {{ ab.book.title }}</option>
               {% endif %}
-                <input type="hidden" name="book_id" value="{{ ab.book.id }}">
             {% endfor %}
           </select>
         </div>
-
         <div class="form-column">
           <label for="borrow-{{ borrow.id }}" class="form-label">Borrow Date</label>
           <input type="date" name="borrow_date" id="borrow-{{ borrow.id }}" class="form-input" value="{{ borrow.borrow_date }}" required>
