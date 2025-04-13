@@ -40,76 +40,91 @@ def books(request):
     q = {k: request.GET.get(k, '').lower() for k in ['title', 'genre', 'author', 'published_date']}
     res = requests.get(f"{API_BASE_URL}/books", headers=headers)
     books = res.json() if res.ok else []
+
+    # Filter books based on query parameters
     for key, val in q.items():
         if val:
             books = [b for b in books if val in b.get(key, '').lower()]
+
+    # Add average rating for each book based on reviews
+    for book in books:
+        reviews_res = requests.get(f"{API_BASE_URL}/books/{book['id']}/reviews", headers=headers)
+        if reviews_res.ok:
+            reviews = reviews_res.json()
+            if reviews:
+                total_rating = sum(review['rating'] for review in reviews)
+                book['average_rating'] = round(total_rating / len(reviews), 2)  # Round to 2 decimal places
+            else:
+                book['average_rating'] = 0
+        else:
+            book['average_rating'] = 0
+
+        # Precompute values for comparison in template
+        book['half_star_comparison'] = [star - 0.5 for star in range(1, 6)]  # For half-star logic
+
+    range_of_stars = range(1, 6)
     return render(request, 'library/books.html', {
         'books': books,
         'is_authenticated': bool(token),
         'token': token,
-        **{f'{k}_query': v for k, v in q.items()}
+        **{f'{k}_query': v for k, v in q.items()},
+        'range_of_stars': range_of_stars
     })
 
+
+
 def book_detail(request, book_id):
-    token = request.COOKIES.get('auth_token')
-    headers = {'Authorization': f'Token {token}'} if token else {}
-
-    if request.method == 'POST':
-        rating = request.POST.get('rating')
-        comment = request.POST.get('comment')
+    token=request.COOKIES.get('auth_token')
+    headers={'Authorization':f'Token {token}'} if token else {}
+    if request.method=='POST':
+        rating=request.POST.get('rating')
+        comment=request.POST.get('comment')
         if rating and comment:
-            review_payload = {
-                'book': book_id,
-                'user': request.user.id,
-                'rating': rating,
-                'comment': comment
-            }
-            review_response = requests.post(f'{API_BASE_URL}/reviews', json=review_payload, headers=headers)
-            if review_response.status_code != 201:
-                return JsonResponse({'error': 'Failed to submit review'}, status=500)
-        return redirect('library:book_detail', book_id=book_id)
+            review_payload={'book':book_id,'user':request.user.id,'rating':rating,'comment':comment}
+            review_response=requests.post(f'{API_BASE_URL}/books/{book_id}/reviews',json=review_payload,headers=headers)
+            if review_response.status_code!=201:
+                return JsonResponse({'error':'Failed to submit review'},status=500)
+        return redirect('library:book_detail',book_id=book_id)
+    book_response=requests.get(f"{API_BASE_URL}/books/{book_id}",headers=headers)
+    if book_response.status_code!=200:
+        return JsonResponse({'error':'Failed to fetch book'},status=500)
+    book=book_response.json()
+    available_books_response=requests.get(f"{API_BASE_URL}/books/{book_id}/availablebooks",headers=headers)
+    if available_books_response.status_code!=200:
+        return JsonResponse({'error':'Failed to fetch available books'},status=500)
+    available_books=available_books_response.json()
+    reviews_response=requests.get(f"{API_BASE_URL}/books/{book_id}/reviews",headers=headers)
+    if reviews_response.status_code!=200:
+        return JsonResponse({'error':'Failed to fetch reviews'},status=500)
+    reviews=reviews_response.json()
+    overall_rating=round(sum(r['rating'] for r in reviews)/len(reviews),2) if reviews else None
+    context={'book':book,'available_books':available_books,'reviews':reviews,'overall_rating':overall_rating,'is_authenticated':bool(token)}
+    return render(request,'library/book-detail.html',context)
 
-    book_response = requests.get(f"{API_BASE_URL}/books/{book_id}", headers=headers)
-    if book_response.status_code != 200:
-        return JsonResponse({'error': 'Failed to fetch book'}, status=500)
-    book = book_response.json()
-
-    available_books_response = requests.get(f"{API_BASE_URL}/books/{book_id}/availablebooks", headers=headers)
-    if available_books_response.status_code != 200:
-        return JsonResponse({'error': 'Failed to fetch available books'}, status=500)
-    available_books = available_books_response.json()
-
-    reviews_response = requests.get(f"{API_BASE_URL}/books/{book_id}/reviews", headers=headers)
-    if reviews_response.status_code != 200:
-        return JsonResponse({'error': 'Failed to fetch reviews'}, status=500)
-    reviews = reviews_response.json()
-
-    context = {
-        'book': book,
-        'available_books': available_books,
-        'reviews': reviews,
-        'is_authenticated': bool(token)
-    }
-    return render(request, 'library/book-detail.html', context)
 
 
 @staff_required
 def borrows(request):
-    headers = {'Authorization': f'Token {request.COOKIES.get("auth_token")}'}
-    if request.method == 'POST':
-        method = request.POST.get('_method')
-        id = request.POST.get('id')
-        payload = {k: request.POST.get(k) for k in ['user', 'available_book', 'return_date', 'borrow_date', 'date_returned']}
-        if method == 'DELETE':
-            r = requests.delete(f'{API_BASE_URL}/borrows/{id}', headers=headers)
-        elif method == 'PUT':
-            r = requests.put(f'{API_BASE_URL}/borrows/{id}', headers=headers, data=payload)
+    headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}
+    if request.method=='POST':
+        method=request.POST.get('_method')
+        book_id=request.POST.get('book_id')
+        available_book_id=request.POST.get('available_book_id') or request.POST.get('available_book')
+        borrow_id=request.POST.get('borrow_id')
+        payload={k:request.POST.get(k) for k in ['user','available_book','return_date','borrow_date','date_returned']}
+        if method=='DELETE':
+            r=requests.delete(f'{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/{borrow_id}',headers=headers)
+        elif method=='PUT':
+            r=requests.put(f'{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows/{borrow_id}',headers=headers,data=payload)
         else:
-            r = requests.post(f'{API_BASE_URL}/borrows', headers=headers, data=payload)
-        return redirect('library:borrows') if r.status_code in [200, 201, 204] else HttpResponse(r.text, status=r.status_code)
-    data = {ep: requests.get(f"{API_BASE_URL}/{ep}", headers=headers).json() for ep in ['borrows', 'availablebooks', 'users']}
-    locations = sorted({ab.get('location') for ab in data['availablebooks'] if ab.get('location')})
-    return render(request, 'library/borrows.html', data | {'locations': locations})
+            from datetime import date
+            payload['borrow_date']=str(date.today())
+            r=requests.post(f'{API_BASE_URL}/books/{book_id}/availablebooks/{available_book_id}/borrows',headers=headers,data=payload)
+        return redirect('library:borrows') if r.status_code in [200,201,204] else HttpResponse(r.text,status=r.status_code)
+    data={ep:requests.get(f"{API_BASE_URL}/{ep}",headers=headers).json() for ep in ['borrows','availablebooks','users']}
+    locations=sorted({ab.get('location') for ab in data['availablebooks'] if ab.get('location')})
+    return render(request,'library/borrows.html',data|{'locations':locations})
+
 
 def create_book(request):
     response = requests.post(f"{API_BASE_URL}/books/",

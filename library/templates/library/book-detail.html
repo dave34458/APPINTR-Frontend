@@ -2,71 +2,95 @@
 {% block title %}{{ book.title }} - Details{% endblock %}
 {% block content %}
 <script src="https://cdn.tailwindcss.com"></script>
-<div class="bg-white py-24 sm:py-32">
-<div class="mx-auto max-w-7xl px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-<div>
-<h2 class="text-indigo-600 text-sm font-semibold">{{ book.author }} - {{ book.published_date }}</h2>
-<h1 class="text-5xl font-bold text-gray-900 mt-2">{{ book.title }}</h1>
-<p class="mt-6 text-lg text-gray-600">{{ book.description }}</p>
-<div class="mt-10 space-y-4 text-base text-gray-700">
-<p><span class="font-semibold text-gray-900">Genre:</span> {{ book.genre }}</p>
-<p><span class="font-semibold text-gray-900">ISBN:</span> {{ book.isbn }}</p>
-<p><span class="font-semibold text-gray-900">Language:</span> {{ book.language }}</p>
-</div>
-</div>
-<img src="{{ book.preview_image }}" alt="Book Preview" class="rounded-2xl shadow-xl w-full max-w-md mx-auto lg:mx-0">
-</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<style>
+*{transition:.6s}h1:hover,h2:hover,h3:hover,h4:hover,h5:hover,h6:hover,p:hover,span:hover,label:hover,li:hover,option:hover,textarea:hover,select:hover,button:hover{color:#6366f1}
 
-<div class="mt-20 max-w-4xl mx-auto">
-<h3 class="text-2xl font-bold text-gray-900">Available Copies</h3>
-<ul class="mt-6 space-y-3">
-{% for available_book in available_books %}
-<li class="flex justify-between border p-4 rounded-lg shadow-sm">
-<span class="text-gray-700 font-medium">{{ available_book.location }}</span>
-<span class="text-green-600">{{ available_book.copy_is_available|yesno:"Available,Not Available" }}</span>
-</li>
-{% empty %}
-<li class="text-gray-500">No available books found.</li>
-{% endfor %}
-</ul>
-</div>
+</style>
 
-<div class="mt-20 max-w-4xl mx-auto">
-<h3 class="text-2xl font-bold text-gray-900">Reviews</h3>
-<ul class="mt-6 space-y-4">
-{% for review in reviews %}
-<li class="border p-4 rounded-lg shadow-sm">
-<p class="font-semibold text-gray-800">{{ review.user.username }}</p>
-<div class="flex items-center mt-1">
-<span class="text-yellow-500">{{ review.rating }}★</span>
-<p class="ml-3 text-gray-600">{{ review.comment }}</p>
-</div>
-</li>
-{% empty %}
-<li class="text-gray-500">No reviews yet.</li>
-{% endfor %}
-</ul>
-</div>
+<div class="relative">
+  <div class="absolute inset-0 bg-fixed bg-cover bg-center opacity-20" style="background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f');"></div>
+  <div class="relative z-10 bg-gradient-to-b from-white/70 to-white py-24 sm:py-32 backdrop-blur-md">
 
-<div class="mt-16 max-w-2xl mx-auto bg-gray-50 p-6 rounded-xl shadow-md">
-<h4 class="text-xl font-semibold text-gray-800 mb-4">Leave a Review</h4>
-<form method="post" class="space-y-4">
-{% csrf_token %}
-<div>
-<label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
-<select name="rating" id="rating" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-<option value="">Choose a rating</option>
-{% for i in "12345" %}
-<option value="{{ i }}">{{ i }}★</option>
-{% endfor %}
-</select>
-</div>
-<div>
-<label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
-<textarea name="comment" id="comment" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-</div>
-<button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Submit Review</button>
-</form>
-</div>
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start animate__animated animate__fadeInUp animate__slow">
+      <div class="space-y-6">
+        <h2 class="text-indigo-600 text-sm font-semibold animate__animated animate__fadeInDown animate__faster">{{ book.author }} - {{ book.published_date }}</h2>
+        <h1 class="text-5xl font-extrabold text-gray-900 mt-2 animate__animated animate__zoomIn">{{ book.title }}</h1>
+
+        <div class="flex items-center space-x-4 mt-4 animate__animated animate__bounce" style="--animate-duration: 3s">
+          <span class="text-yellow-500 text-3xl">★</span>
+          <p class="text-lg font-medium text-gray-800">Overall Rating: <span class="text-indigo-600">{{ overall_rating }}</span></p>
+        </div>
+
+        <p class="text-lg text-gray-600 animate__animated animate__fadeInUp animate__delay-1s">{{ book.description }}</p>
+        <div class="text-base text-gray-700 space-y-2 animate__animated animate__fadeInLeft animate__delay-2s">
+          <p><span class="font-semibold text-gray-900">Genre:</span> {{ book.genre }}</p>
+          <p><span class="font-semibold text-gray-900">ISBN:</span> {{ book.isbn }}</p>
+          <p><span class="font-semibold text-gray-900">Language:</span> {{ book.language }}</p>
+        </div>
+      </div>
+
+      <div class="relative w-full flex justify-center">
+        <img src="{{ book.preview_image }}" alt="Book Preview" class="rounded-3xl shadow-2xl w-full max-w-md animate__animated animate__zoomInUp animate__delay-1s">
+        <lottie-player src="https://lottie.host/84f6579c-a76b-4267-9619-0a0e5c26e0b2/ypPhPyaS2e.json" background="transparent" speed="1" class="absolute -top-10 -right-10 w-24 h-24" loop autoplay></lottie-player>
+      </div>
+    </div>
+
+    <div class="mt-24 max-w-4xl mx-auto animate__animated animate__fadeInUp">
+      <h3 class="text-3xl font-extrabold text-gray-900">Available Copies</h3>
+      <ul class="mt-8 space-y-4">
+        {% for available_book in available_books %}
+        <li class="flex justify-between items-center border border-gray-200 bg-white p-4 rounded-2xl shadow hover:shadow-xl transition-all duration-300">
+          <span class="text-gray-700 font-semibold">{{ available_book.location }}</span>
+          <span class="text-green-600 font-semibold">{{ available_book.copy_is_available|yesno:"Available,Not Available" }}</span>
+        </li>
+        {% empty %}
+        <li class="text-gray-500">No available books found.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="mt-24 max-w-4xl mx-auto animate__animated animate__fadeInUp animate__delay-1s">
+      <h3 class="text-3xl font-extrabold text-gray-900">Reviews</h3>
+      <ul class="mt-8 space-y-6">
+        {% for review in reviews %}
+        <li class="border border-gray-200 p-6 rounded-2xl shadow-md hover:shadow-xl bg-white transition duration-300">
+          <p class="font-semibold text-indigo-700 text-lg">{{ review.user.username }}</p>
+          <div class="flex items-center mt-2 space-x-3">
+            <span class="text-yellow-500 font-bold text-xl">{{ review.rating }}★</span>
+            <p class="text-gray-700">{{ review.comment }}</p>
+          </div>
+        </li>
+        {% empty %}
+        <li class="text-gray-500">No reviews yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+{% if is_authenticated %}
+        <div class="mt-24 max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-xl animate__animated animate__fadeInUp animate__delay-2s">
+      <h4 class="text-2xl font-bold text-gray-800 mb-6">Leave a Review</h4>
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+        <div>
+          <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+          <select name="rating" id="rating" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition">
+            <option value="">Choose a rating</option>
+            {% for i in "12345" %}
+            <option value="{{ i }}">{{ i }}★</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
+          <textarea name="comment" id="comment" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition"></textarea>
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-700 transform hover:scale-105 transition duration-300">Submit Review</button>
+      </form>
+    </div>
+{% endif %}
+
+  </div>
 </div>
 {% endblock %}
