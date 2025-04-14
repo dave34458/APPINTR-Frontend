@@ -1,0 +1,73 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Books{% endblock %}
+<head>
+    <style>.star {
+    font-size: 20px;
+    color: #FFD700;  /* Full star color */
+}
+
+.star.empty {
+    color: #D3D3D3;  /* Empty star color */
+}
+
+.star.half-filled {
+    color: #FFD700;  /* Half-filled star color */
+    background: linear-gradient(to left, transparent 50%, #FFD700 50%);
+    -webkit-background-clip: text;
+}
+    </style></head>
+{% block content %}
+<div class="content-wrap">
+    <div class="search">
+        <form action="{% url 'library:all_books' %}" method="GET" class="search-component w-form">
+            <input class="search-input w-input" maxlength="256" name="title" placeholder="Search by title…" type="search" id="search" value="{{ request.GET.title }}" required="">
+            <input type="submit" class="search-button w-button" value="">
+        </form>
+    </div>
+    <h2 class="section-title">Books</h2>
+    <div class="w-dyn-list">
+        <div class="_3-col-grid w-dyn-items">
+            {% for book in books %}
+            <div class="card book-card">
+                <a href="{% url 'library:book_detail' book.id %}" class="card-link image w-inline-block">
+                    <img src="{{ book.preview_image }}" alt="{{ book.title }}" class="book-image">
+                </a>
+                <div class="card-data books">
+                    <a href="{% url 'library:all_books' %}?genre={{ book.genre|urlencode }}" class="category-link w-inline-block">
+                        <div class="category">{{ book.genre }}</div>
+                    </a>
+                    <a href="{% url 'library:book_detail' book.id %}" class="card-link w-inline-block">
+                        <h3 class="card-title">{{ book.title }}</h3>
+                        <p>{{ book.description|truncatewords:20 }}</p>
+                    </a>
+                </div>
+                <div class="author-info lesson-card w-inline-block">
+                    {% if book.is_available %}
+                    <div class="availability-dot available"></div>
+                    {% else %}
+                    <div class="availability-dot unavailable"></div>
+                    {% endif %}
+                    <a href="{% url 'library:all_books' %}?author={{ book.author|urlencode }}" class="author-name">{{ book.author }}</a>
+                    <a href="{% url 'library:all_books' %}?published_date={{ book.published_date|urlencode }}" class="published-date">{{ book.published_date }}</a>
+                </div>
+                <div class="rating-stars">
+    {% for star in range_of_stars %}
+        {% if book.average_rating >= star %}
+            <span class="star filled">&#9733;</span>  <!-- Full star -->
+        {% elif book.average_rating >= book.half_star_comparison|default:0 %}
+            <span class="star half-filled">&#9733;</span>  <!-- Half star -->
+        {% else %}
+            <span class="star empty">&#9733;</span>  <!-- Empty star -->
+        {% endif %}
+    {% endfor %}
+    <span class="average-rating">({{ book.average_rating }})</span>
+</div>
+            </div>
+            {% empty %}
+            <p>No books available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

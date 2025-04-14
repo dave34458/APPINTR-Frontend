@@ -5,7 +5,7 @@
 {% block content %}
 <div class="content-wrap">
 <div class="search">
-    <form action="{% url 'library:books' %}" method="GET" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e499f" class="search-component w-form" style="">
+    <form action="{% url 'library:all_books' %}" method="GET" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e499f" class="search-component w-form" style="">
         <input class="search-input w-input" maxlength="256" name="title" placeholder="Search by title…" data-w-id="7096e4cb-57fe-326d-4ae3-dbe8cd2e49a0" type="search" id="search" value="{{ request.GET.title }}" required="" style="">
         <input type="submit" class="search-button w-button" value="">
     </form>
@@ -35,7 +35,7 @@
           </div>
 
           <div class="featured-info">
-            <a href="{% url 'library:books' %}?genre={{ latest_book.genre|urlencode }}" class="category-link w-inline-block">
+            <a href="{% url 'library:all_books' %}?genre={{ latest_book.genre|urlencode }}" class="category-link w-inline-block">
               <div class="category" style="color: hsla(231, 89%, 53.14%, 1)">{{ latest_book.genre }}</div>
             </a>
 
@@ -76,7 +76,7 @@
                 </a>
                 <div class="card-data books">
                   <!-- New Category div for genre -->
-                    <a href="{% url 'library:books' %}?genre={{ book.genre|urlencode }}" class="category-link w-inline-block">
+                    <a href="{% url 'library:all_books' %}?genre={{ book.genre|urlencode }}" class="category-link w-inline-block">
                       <div class="category" id="category-{{ book.id }}">{{ book.genre }}</div>
                     </a>
                   <a href="{% url 'library:book_detail' book.id %}" class="card-link w-inline-block">
