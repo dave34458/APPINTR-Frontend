@@ -78,32 +78,47 @@ def all_books(request):
 def book_detail(request, book_id):
     token=request.COOKIES.get('auth_token')
     headers={'Authorization':f'Token {token}'} if token else {}
-    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
-    is_staff = res.json().get('role') == 'staff' if res.ok else False
-    if request.method=='POST':
+    res=requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff=res.json().get('role')=='staff' if res.ok else False
+    if request.method in ['POST', 'PUT']:
+        method=request.POST.get('_method')
+        review_id=request.POST.get('review_id')
+        book_id=request.POST.get('book_id')  # Get book_id from the form data
         rating=request.POST.get('rating')
         comment=request.POST.get('comment')
-        if rating and comment:
-            review_payload={'book':book_id,'user':request.user.id,'rating':rating,'comment':comment}
-            review_response=requests.post(f'{API_BASE_URL}/books/{book_id}/reviews',json=review_payload,headers=headers)
-            if review_response.status_code!=201:
-                return JsonResponse({'error':'Failed to submit review'},status=500)
-        return redirect('library:book_detail',book_id=book_id)
-    book_response=requests.get(f"{API_BASE_URL}/books/{book_id}",headers=headers)
-    if book_response.status_code!=200:
-        return JsonResponse({'error':'Failed to fetch book'},status=500)
-    book=book_response.json()
-    available_books_response=requests.get(f"{API_BASE_URL}/books/{book_id}/available-books",headers=headers)
-    if available_books_response.status_code!=200:
-        return JsonResponse({'error':'Failed to fetch available books'},status=500)
-    available_books=available_books_response.json()
-    reviews_response=requests.get(f"{API_BASE_URL}/books/{book_id}/reviews",headers=headers)
-    if reviews_response.status_code!=200:
-        return JsonResponse({'error':'Failed to fetch reviews'},status=500)
-    reviews=reviews_response.json()
-    overall_rating=round(sum(r['rating'] for r in reviews)/len(reviews),2) if reviews else None
-    context={'book':book,'available_books':available_books,'reviews':reviews,'overall_rating':overall_rating,'is_authenticated':bool(token), 'is_staff': is_staff}
-    return render(request,'library/book-detail.html',context)
+        if method == 'DELETE':
+            r=requests.delete(f'{API_BASE_URL}/books/{book_id}/reviews/{review_id}', headers=headers)
+            if r.status_code != 204:
+                return JsonResponse({'error':'Failed to delete review'}, status=500)
+        elif method == 'PUT':
+            if review_id:
+                review_payload = {'rating': rating, 'comment': comment} if rating and comment else {}
+                r = requests.put(f'{API_BASE_URL}/books/{book_id}/reviews/{review_id}', json=review_payload, headers=headers)
+                if r.status_code != 200:
+                    return JsonResponse({'error': 'Failed to update review'}, status=500)
+        else:
+            if rating and comment:
+                review_payload = {'book': book_id, 'user': request.user.id, 'rating': rating, 'comment': comment}
+                review_response = requests.post(f'{API_BASE_URL}/books/{book_id}/reviews', json=review_payload, headers=headers)
+                if review_response.status_code != 201:
+                    return JsonResponse({'error':'Failed to submit review'}, status=500)
+        return redirect('library:book_detail', book_id=book_id)
+    book_response = requests.get(f"{API_BASE_URL}/books/{book_id}", headers=headers)
+    if book_response.status_code != 200:
+        return JsonResponse({'error':'Failed to fetch book'}, status=500)
+    book = book_response.json()
+    available_books_response = requests.get(f"{API_BASE_URL}/books/{book_id}/available-books", headers=headers)
+    if available_books_response.status_code != 200:
+        return JsonResponse({'error':'Failed to fetch available books'}, status=500)
+    available_books = available_books_response.json()
+    reviews_response = requests.get(f"{API_BASE_URL}/books/{book_id}/reviews", headers=headers)
+    if reviews_response.status_code != 200:
+        return JsonResponse({'error':'Failed to fetch reviews'}, status=500)
+    reviews = reviews_response.json()
+    overall_rating = round(sum(r['rating'] for r in reviews) / len(reviews), 2) if reviews else None
+    context = {'book_id':book_id, 'book': book, 'available_books': available_books, 'reviews': reviews, 'overall_rating': overall_rating, 'is_authenticated': bool(token), 'is_staff': is_staff}
+    return render(request, 'library/book-detail.html', context)
+
 
 
 def profile(request):
