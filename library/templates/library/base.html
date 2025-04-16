@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}Educare</title>
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta content="Webflow" name="generator">
     <link href="{% static 'css/styles1.css' %}" rel="stylesheet">
@@ -46,11 +46,11 @@
                     </a>
                     <a href="{% url 'library:all_books' %}" class="navlink w-inline-block">
                         <img src="{% static 'icons/image3.svg' %}" width="22" class="icon">
-                        <div>Books</div>
+                        <div>All Books</div>
                     </a>
                 {% if is_staff %}
                     <a href="{% url 'library:books' %}" class="navlink w-inline-block">
-                        <img src="{% static 'icons/image7.svg' %}" width="22" class="icon">
+                        <img src="{% static 'icons/image5.svg' %}" width="22" class="icon">
                         <div>Manage Books</div>
                     </a>
                     <a href="{% url 'library:available_books' %}" class="navlink w-inline-block">
@@ -58,26 +58,26 @@
                         <div>Manage Available Books</div>
                     </a>
                     <a href="{% url 'library:borrows' %}" class="navlink w-inline-block">
-                        <img src="{% static 'icons/image4.svg' %}" width="22" class="icon">
+                        <img src="{% static 'icons/image5.svg' %}" width="22" class="icon">
                         <div>Manage Borrows</div>
                     </a>
                     <a href="{% url 'library:users' %}" class="navlink w-inline-block">
-                        <img src="{% static 'icons/image4.svg' %}" width="22" class="icon">
+                        <img src="{% static 'icons/image5.svg' %}" width="22" class="icon">
                         <div>Manage Users</div>
                     </a>
                 {% endif %}
                     {% if is_authenticated %}
                         <a href="{% url 'library:profile' %}" class="navlink w-inline-block">
-                            <img src="{% static 'icons/image6.svg' %}" width="22" class="icon">
+                            <img src="{% static 'icons/image9.svg' %}" width="22" class="icon">
                             <div>Profile</div>
                         </a>
                         <a href="{% url 'library:logout' %}" class="navlink w-inline-block">
-                            <img src="{% static 'icons/image6.svg' %}" width="22" class="icon">
+                            <img src="{% static 'icons/image8.svg' %}" width="22" class="icon">
                             <div>Logout</div>
                         </a>
                     {% else %}
                         <a href="{% url 'library:login' %}" class="navlink w-inline-block">
-                            <img src="{% static 'icons/image6.svg' %}" width="22" class="icon">
+                            <img src="{% static 'icons/image10.svg' %}" width="50" class="icon" style="width: 23.5px">
                             <div>Login</div>
                         </a>
                     {% endif %}
