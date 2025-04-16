@@ -2,27 +2,30 @@
 
 {% block title %}Books{% endblock %}
 <head>
-    <style>.star {
-    font-size: 20px;
-    color: #FFD700;  /* Full star color */
-}
-
-.star.empty {
-    color: #D3D3D3;  /* Empty star color */
-}
-
-.star.half-filled {
-    color: #FFD700;  /* Half-filled star color */
-    background: linear-gradient(to left, transparent 50%, #FFD700 50%);
-    -webkit-background-clip: text;
-}
-    </style></head>
+    <style>
+        .star {
+            font-size: 20px;
+            color: #FFD700;
+        }
+        .star.empty {
+            color: #D3D3D3;
+        }
+        .star.half-filled {
+            color: #FFD700;
+            background: linear-gradient(to left, transparent 50%, #FFD700 50%);
+            -webkit-background-clip: text;
+        }
+    </style>
+</head>
 {% block content %}
 <div class="content-wrap">
     <div class="search">
         <form action="{% url 'library:all_books' %}" method="GET" class="search-component w-form">
-            <input class="search-input w-input" maxlength="256" name="title" placeholder="Search by title…" type="search" id="search" value="{{ request.GET.title }}" required="">
-            <input type="submit" class="search-button w-button" value="">
+            <input class="search-input w-input" maxlength="256" name="title" placeholder="Search by title…" type="search" value="{{ request.GET.title }}">
+            <input class="search-input w-input" maxlength="256" name="author" placeholder="Search by author…" type="search" value="{{ request.GET.author }}">
+            <input class="search-input w-input" maxlength="256" name="genre" placeholder="Search by genre…" type="search" value="{{ request.GET.genre }}">
+            <input class="search-input w-input" maxlength="256" name="published_date" placeholder="Search by published date…" type="search" value="{{ request.GET.published_date }}">
+            <input type="submit" class="search-button w-button" value="Search">
         </form>
     </div>
     <h2 class="section-title">Books</h2>
@@ -52,17 +55,17 @@
                     <a href="{% url 'library:all_books' %}?published_date={{ book.published_date|urlencode }}" class="published-date">{{ book.published_date }}</a>
                 </div>
                 <div class="rating-stars">
-    {% for star in range_of_stars %}
-        {% if book.average_rating >= star %}
-            <span class="star filled">&#9733;</span>  <!-- Full star -->
-        {% elif book.average_rating >= book.half_star_comparison|default:0 %}
-            <span class="star half-filled">&#9733;</span>  <!-- Half star -->
-        {% else %}
-            <span class="star empty">&#9733;</span>  <!-- Empty star -->
-        {% endif %}
-    {% endfor %}
-    <span class="average-rating">({{ book.average_rating }})</span>
-</div>
+                    {% for star in range_of_stars %}
+                        {% if book.average_rating >= star %}
+                            <span class="star filled">&#9733;</span>
+                        {% elif book.average_rating >= book.half_star_comparison|default:0 %}
+                            <span class="star half-filled">&#9733;</span>
+                        {% else %}
+                            <span class="star empty">&#9733;</span>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="average-rating">({{ book.average_rating }})</span>
+                </div>
             </div>
             {% empty %}
             <p>No books available.</p>
