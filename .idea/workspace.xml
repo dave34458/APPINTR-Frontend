@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="remove the comments bro">
-      <change afterPath="$PROJECT_DIR$/library/templates/library/profile.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/templates/library/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/profile.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

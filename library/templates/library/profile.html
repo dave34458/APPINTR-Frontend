@@ -25,9 +25,7 @@
       </div>
 
       <div class="relative w-full flex justify-center">
-        <div class="rounded-full w-32 h-32 bg-gray-300 flex items-center justify-center text-xl text-white">
           <span>{{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}</span>
-        </div>
       </div>
     </div>
 
@@ -61,29 +59,6 @@
         {% endfor %}
       </ul>
     </div>
-
-    {% if is_authenticated %}
-    <div class="mt-24 max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-xl animate__animated animate__fadeInUp animate__delay-2s">
-      <h4 class="text-2xl font-bold text-gray-800 mb-6">Leave a Review</h4>
-      <form method="post" class="space-y-6">
-        {% csrf_token %}
-        <div>
-          <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
-          <select name="rating" id="rating" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition">
-            <option value="">Choose a rating</option>
-            {% for i in "12345" %}
-            <option value="{{ i }}">{{ i }}★</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div>
-          <label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
-          <textarea name="comment" id="comment" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition"></textarea>
-        </div>
-        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-700 transform hover:scale-105 transition duration-300">Submit Review</button>
-      </form>
-    </div>
-    {% endif %}
 
   </div>
 </div>
