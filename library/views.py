@@ -47,11 +47,9 @@ def all_books(request):
     q = {k: request.GET.get(k, '').lower() for k in ['title', 'genre', 'author', 'published_date']}
     res = requests.get(f"{API_BASE_URL}/books", headers=headers)
     books = res.json() if res.ok else []
-    # Filter books based on query parameters
     for key, val in q.items():
         if val:
             books = [b for b in books if val in b.get(key, '').lower()]
-    # Add average rating for each book based on reviews
     for book in books:
         reviews_res = requests.get(f"{API_BASE_URL}/books/{book['id']}/reviews", headers=headers)
         if reviews_res.ok:
@@ -63,7 +61,6 @@ def all_books(request):
                 book['average_rating'] = 0
         else:
             book['average_rating'] = 0
-        # Precompute values for comparison in template
         book['half_star_comparison'] = [star - 0.5 for star in range(1, 6)]  # For half-star logic
     range_of_stars = range(1, 6)
     return render(request, 'library/all-books.html', {
@@ -118,8 +115,6 @@ def book_detail(request, book_id):
     overall_rating = round(sum(r['rating'] for r in reviews) / len(reviews), 2) if reviews else None
     context = {'book_id':book_id, 'book': book, 'available_books': available_books, 'reviews': reviews, 'overall_rating': overall_rating, 'is_authenticated': bool(token), 'is_staff': is_staff}
     return render(request, 'library/book-detail.html', context)
-
-
 
 def profile(request):
     token = request.COOKIES.get('auth_token')

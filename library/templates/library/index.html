@@ -43,10 +43,8 @@
 
                 <div class="author-info lesson-card w-inline-block">
                   {% if latest_book.is_available %}
-                    <!-- Green dot for available books -->
                     <div class="availability-dot available"></div>
                   {% else %}
-                    <!-- Red dot for unavailable books -->
                     <div class="availability-dot unavailable"></div>
                   {% endif %}
                   <div class="author-name">{{ latest_book.author }}</div>
@@ -75,7 +73,6 @@
                   <img src="{{ book.preview_image }}" alt="{{ book.title }}" class="book-image">
                 </a>
                 <div class="card-data books">
-                  <!-- New Category div for genre -->
                     <a href="{% url 'library:all_books' %}?genre={{ book.genre|urlencode }}" class="category-link w-inline-block">
                       <div class="category" id="category-{{ book.id }}">{{ book.genre }}</div>
                     </a>
@@ -86,10 +83,8 @@
                 </div>
                 <div class="author-info lesson-card w-inline-block">
                   {% if book.is_available %}
-                    <!-- Green dot for available books -->
                     <div class="availability-dot available"></div>
                   {% else %}
-                    <!-- Red dot for unavailable books -->
                     <div class="availability-dot unavailable"></div>
                   {% endif %}
                   <div class="author-name">{{ book.author }}</div>

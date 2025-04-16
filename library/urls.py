@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-app_name = 'library'  # Add this line to define the app name
+app_name = 'library'
 
 urlpatterns = [
     path('login', views.login, name='login'),

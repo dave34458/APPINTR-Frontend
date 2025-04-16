@@ -20,7 +20,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('library/', include('library.urls')),  # Include the library app's URLs
+    path('library/', include('library.urls')),
 ]
 
 APPEND_SLASH = False

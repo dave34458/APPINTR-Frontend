@@ -126,10 +126,8 @@
   const password = document.getElementById('password');
 
   togglePassword.addEventListener('click', function() {
-    // Toggle the type of password field
     const type = password.type === 'password' ? 'text' : 'password';
     password.type = type;
-    // Toggle the icon
     togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
   });
 

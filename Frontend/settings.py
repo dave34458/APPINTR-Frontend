@@ -125,6 +125,6 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default session engine
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 APPEND_SLASH = False

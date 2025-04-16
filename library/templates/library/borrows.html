@@ -281,7 +281,6 @@ select option{transition:background-color .3s ease}
         </tr>
 <div id="modal-{{ borrow.id }}" class="modal">
   <div class="modal-content">
-  <!---------------------------------------------------------------------------------------------------------------->
     <form method="POST" action="{% url 'library:borrows' %}">
       {% csrf_token %}
       <input type="hidden" name="_method" value="PUT">
