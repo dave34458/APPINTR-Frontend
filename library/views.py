@@ -105,6 +105,30 @@ def book_detail(request, book_id):
     context={'book':book,'available_books':available_books,'reviews':reviews,'overall_rating':overall_rating,'is_authenticated':bool(token), 'is_staff': is_staff}
     return render(request,'library/book-detail.html',context)
 
+
+def profile(request):
+    token = request.COOKIES.get('auth_token')
+    headers = {'Authorization': f'Token {token}'} if token else {}
+    # Get user info
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    if not res.ok:
+        return JsonResponse({'error': 'Failed to fetch user info'}, status=500)
+    user = res.json()
+    is_staff = user.get('role') == 'staff'
+    # Get borrows and reviews
+    borrows_res = requests.get(f"{API_BASE_URL}/borrows?user=me", headers=headers)
+    borrows = borrows_res.json() if borrows_res.ok else []
+    reviews_res = requests.get(f"{API_BASE_URL}/reviews?user=me", headers=headers)
+    reviews = reviews_res.json() if reviews_res.ok else []
+    return render(request, 'library/profile.html', {
+        'user': user,
+        'borrows': borrows,
+        'reviews': reviews,
+        'is_authenticated': bool(token),
+        'is_staff': is_staff
+    })
+
+
 @staff_required
 def borrows(request):
     headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}

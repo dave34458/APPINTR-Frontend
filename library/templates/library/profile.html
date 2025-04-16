@@ -1,0 +1,90 @@
+{% extends 'library/base.html' %}
+{% block title %}Profile - {{ user.username }}{% endblock %}
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<style>
+*{transition:.6s}h1:hover,h2:hover,h3:hover,h4:hover,h5:hover,h6:hover,p:hover,span:hover,label:hover,li:hover,option:hover,textarea:hover,select:hover,button:hover{color:#6366f1}
+</style>
+
+<div class="relative">
+  <div class="absolute inset-0 bg-fixed bg-cover bg-center opacity-20" style="background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f');"></div>
+  <div class="relative z-10 bg-gradient-to-b from-white/70 to-white py-24 sm:py-32 backdrop-blur-md">
+
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start animate__animated animate__fadeInUp animate__slow">
+      <div class="space-y-6">
+        <h1 class="text-5xl font-extrabold text-gray-900 mt-2 animate__animated animate__zoomIn">{{ user.username }}</h1>
+        <h2 class="text-indigo-600 text-sm font-semibold animate__animated animate__fadeInDown animate__faster">Role: {{ user.role|capfirst }}</h2>
+        <h3 class="text-lg text-gray-600 animate__animated animate__fadeInUp animate__delay-1s"></h3>
+
+        <div class="mt-4">
+          <p class="text-lg text-gray-600 animate__animated animate__fadeInUp">Library Card Number: {{ user.id }}</p>
+          <p class="text-lg text-gray-600">Email: {{ user.email }}</p>
+        </div>
+      </div>
+
+      <div class="relative w-full flex justify-center">
+        <div class="rounded-full w-32 h-32 bg-gray-300 flex items-center justify-center text-xl text-white">
+          <span>{{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-24 max-w-4xl mx-auto animate__animated animate__fadeInUp">
+      <h3 class="text-3xl font-extrabold text-gray-900">Borrowed History</h3>
+      <ul class="mt-8 space-y-4">
+        {% for borrow in borrows %}
+        <li class="flex justify-between items-center border border-gray-200 bg-white p-4 rounded-2xl shadow hover:shadow-xl transition-all duration-300">
+          <span class="text-gray-700 font-semibold">{{ borrow.available_book.book.title }}: {{ borrow.available_book.location }}</span>
+          <span class="text-gray-600">{{ borrow.borrow_date }} to {% if date_returned %} {{ borrow.date_returned }}{% else %}Present{% endif %}</span>
+        </li>
+        {% empty %}
+        <li class="text-gray-500">No borrowed books found.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="mt-24 max-w-4xl mx-auto animate__animated animate__fadeInUp animate__delay-1s">
+      <h3 class="text-3xl font-extrabold text-gray-900">Review History</h3>
+      <ul class="mt-8 space-y-6">
+        {% for review in reviews %}
+        <li class="border border-gray-200 p-6 rounded-2xl shadow-md hover:shadow-xl bg-white transition duration-300">
+          <p class="font-semibold text-indigo-700 text-lg">{{ review.book.title }}</p>
+          <div class="flex items-center mt-2 space-x-3">
+            <span class="text-yellow-500 font-bold text-xl">{{ review.rating }}★</span>
+            <p class="text-gray-700">{{ review.comment }}</p>
+          </div>
+        </li>
+        {% empty %}
+        <li class="text-gray-500">No reviews yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% if is_authenticated %}
+    <div class="mt-24 max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-xl animate__animated animate__fadeInUp animate__delay-2s">
+      <h4 class="text-2xl font-bold text-gray-800 mb-6">Leave a Review</h4>
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+        <div>
+          <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+          <select name="rating" id="rating" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition">
+            <option value="">Choose a rating</option>
+            {% for i in "12345" %}
+            <option value="{{ i }}">{{ i }}★</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
+          <textarea name="comment" id="comment" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition"></textarea>
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-700 transform hover:scale-105 transition duration-300">Submit Review</button>
+      </form>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

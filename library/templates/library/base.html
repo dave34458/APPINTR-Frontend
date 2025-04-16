@@ -68,6 +68,10 @@
                     </a>
                 {% endif %}
                     {% if is_authenticated %}
+                        <a href="{% url 'library:profile' %}" class="navlink w-inline-block">
+                            <img src="{% static 'icons/image6.svg' %}" width="22" class="icon">
+                            <div>Profile</div>
+                        </a>
                         <a href="{% url 'library:logout' %}" class="navlink w-inline-block">
                             <img src="{% static 'icons/image6.svg' %}" width="22" class="icon">
                             <div>Logout</div>
