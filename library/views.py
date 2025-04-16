@@ -20,6 +20,8 @@ def staff_required(function):
 def index(request):
     token = request.COOKIES.get('auth_token')
     headers = {'Authorization': f'Token {token}'} if token else {}
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff = res.json().get('role') == 'staff' if res.ok else False
     search = request.GET.get('title', '').strip().lower()
     res = requests.get(f"{API_BASE_URL}/books", headers=headers)
     books = res.json() if res.ok else []
@@ -34,11 +36,14 @@ def index(request):
         'is_authenticated': bool(token),
         'token': token,
         'search_query': search,
+        'is_staff': is_staff
     })
 
 def all_books(request):
     token = request.COOKIES.get('auth_token')
     headers = {'Authorization': f'Token {token}'} if token else {}
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff = res.json().get('role') == 'staff' if res.ok else False
     q = {k: request.GET.get(k, '').lower() for k in ['title', 'genre', 'author', 'published_date']}
     res = requests.get(f"{API_BASE_URL}/books", headers=headers)
     books = res.json() if res.ok else []
@@ -66,12 +71,15 @@ def all_books(request):
         'is_authenticated': bool(token),
         'token': token,
         **{f'{k}_query': v for k, v in q.items()},
-        'range_of_stars': range_of_stars
+        'range_of_stars': range_of_stars,
+        'is_staff': is_staff
     })
 
 def book_detail(request, book_id):
     token=request.COOKIES.get('auth_token')
     headers={'Authorization':f'Token {token}'} if token else {}
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff = res.json().get('role') == 'staff' if res.ok else False
     if request.method=='POST':
         rating=request.POST.get('rating')
         comment=request.POST.get('comment')
@@ -94,12 +102,14 @@ def book_detail(request, book_id):
         return JsonResponse({'error':'Failed to fetch reviews'},status=500)
     reviews=reviews_response.json()
     overall_rating=round(sum(r['rating'] for r in reviews)/len(reviews),2) if reviews else None
-    context={'book':book,'available_books':available_books,'reviews':reviews,'overall_rating':overall_rating,'is_authenticated':bool(token)}
+    context={'book':book,'available_books':available_books,'reviews':reviews,'overall_rating':overall_rating,'is_authenticated':bool(token), 'is_staff': is_staff}
     return render(request,'library/book-detail.html',context)
 
 @staff_required
 def borrows(request):
     headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff = res.json().get('role') == 'staff' if res.ok else False
     if request.method=='POST':
         method=request.POST.get('_method')
         book_id=request.POST.get('book_id')
@@ -125,11 +135,13 @@ def borrows(request):
     users = requests.get(f"{API_BASE_URL}/users", headers=headers).json()
     data = {'borrows': borrows, 'availablebooks': availablebooks, 'users': users}
     locations=sorted({ab.get('location') for ab in data['availablebooks'] if ab.get('location')})
-    return render(request,'library/borrows.html',data|{'locations':locations,'is_authenticated': bool(request.COOKIES.get("auth_token"))})
+    return render(request,'library/borrows.html',data|{'locations':locations,'is_authenticated': bool(request.COOKIES.get("auth_token")), 'is_staff': is_staff})
 
 @staff_required
 def available_books(request):
     headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff = res.json().get('role') == 'staff' if res.ok else False
     if request.method=='POST':
         method=request.POST.get('_method')
         book_id=request.POST.get('book_id')
@@ -147,12 +159,14 @@ def available_books(request):
         return redirect('library:available_books') if r.status_code in [200,201,204] else HttpResponse(r.text,status=r.status_code)
     books = requests.get(f"{API_BASE_URL}/books", headers=headers).json()
     available_books = requests.get(f"{API_BASE_URL}/available-books", headers=headers).json()
-    data = {'available_books': available_books, 'books': books,'is_authenticated': bool(request.COOKIES.get("auth_token"))}
+    data = {'available_books': available_books, 'books': books,'is_authenticated': bool(request.COOKIES.get("auth_token")),'is_staff': is_staff}
     return render(request,'library/available-books.html',data)
 
 @staff_required
 def books(request):
     headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff = res.json().get('role') == 'staff' if res.ok else False
     if request.method=='POST':
         method=request.POST.get('_method')
         book_id=request.POST.get('book_id')
@@ -175,8 +189,34 @@ def books(request):
             r=requests.post(f'{API_BASE_URL}/books',headers=headers,data=payload, files=files)
         return redirect('library:books') if r.status_code in [200,201,204] else HttpResponse(r.text,status=r.status_code)
     books = requests.get(f"{API_BASE_URL}/books", headers=headers).json()
-    data = {'books': books,'is_authenticated': bool(request.COOKIES.get("auth_token"))}
+    data = {'books': books,'is_authenticated': bool(request.COOKIES.get("auth_token")), 'is_staff': is_staff}
     return render(request,'library/books.html',data)
+
+@staff_required
+def users(request):
+    headers={'Authorization':f'Token {request.COOKIES.get("auth_token")}'}
+    res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
+    is_staff = res.json().get('role') == 'staff' if res.ok else False
+    if request.method=='POST':
+        method=request.POST.get('_method')
+        user_id=request.POST.get('user_id')
+        payload = {
+            'username': request.POST.get('username'),
+            'email': request.POST.get('email'),
+            'role': request.POST.get('role'),
+            'password': request.POST.get('password')
+        }
+        if method=='DELETE':
+            r=requests.delete(f'{API_BASE_URL}/users/{user_id}',headers=headers)
+        elif method=='PUT':
+            r=requests.put(f'{API_BASE_URL}/users/{user_id}',headers=headers,data=payload)
+        else:
+            r=requests.post(f'{API_BASE_URL}/users',headers=headers,data=payload)
+        return redirect('library:users') if r.status_code in [200,201,204] else HttpResponse(r.text,status=r.status_code)
+    users = requests.get(f"{API_BASE_URL}/users", headers=headers).json()
+    data = {'users': users,'is_authenticated': bool(request.COOKIES.get("auth_token")), 'is_staff': is_staff}
+    return render(request,'library/users.html',data)
+
 def login(request):
     if request.method == 'POST':
         username = request.POST['username']

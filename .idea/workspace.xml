@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="cute book_detail">
-      <change afterPath="$PROJECT_DIR$/library/templates/library/all-books.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/library/templates/library/users.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/templates/library/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/books.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/books.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/templates/library/book-detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/book-detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/views.py" afterDir="false" />
     </list>
@@ -305,7 +304,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/library/views.py</url>
-          <line>24</line>
+          <line>26</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="django-line">

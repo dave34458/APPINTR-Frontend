@@ -49,6 +49,7 @@
                         <img src="{% static 'icons/image3.svg' %}" width="22" class="icon">
                         <div>Books</div>
                     </a>
+                {% if is_staff %}
                     <a href="{% url 'library:books' %}" class="navlink w-inline-block">
                         <img src="{% static 'icons/image7.svg' %}" width="22" class="icon">
                         <div>Manage Books</div>
@@ -61,6 +62,11 @@
                         <img src="{% static 'icons/image4.svg' %}" width="22" class="icon">
                         <div>Manage Borrows</div>
                     </a>
+                    <a href="{% url 'library:users' %}" class="navlink w-inline-block">
+                        <img src="{% static 'icons/image4.svg' %}" width="22" class="icon">
+                        <div>Manage Users</div>
+                    </a>
+                {% endif %}
                     {% if is_authenticated %}
                         <a href="{% url 'library:logout' %}" class="navlink w-inline-block">
                             <img src="{% static 'icons/image6.svg' %}" width="22" class="icon">

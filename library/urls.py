@@ -13,6 +13,7 @@ urlpatterns = [
     path('books/<int:book_id>', views.book_detail, name='book_detail'),
     path('books', views.books, name='books'),
     path('available-books', views.available_books, name='available_books'),
-    path('borrows', views.borrows, name='borrows')
+    path('borrows', views.borrows, name='borrows'),
+    path('users', views.users, name='users'),
 
 ]
