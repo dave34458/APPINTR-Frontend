@@ -4,18 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="removed comments">
+    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="removed comments fixed titles and icons">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/all-books.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/all-books.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/available-books.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/available-books.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/templates/library/book-detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/book-detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/books.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/books.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/borrows.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/borrows.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/users.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/users.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,7 +111,8 @@
       <workItem from="1744648935897" duration="4347000" />
       <workItem from="1744795471336" duration="644000" />
       <workItem from="1744813791012" duration="1769000" />
-      <workItem from="1744827707232" duration="2258000" />
+      <workItem from="1744827707232" duration="2290000" />
+      <workItem from="1744917081444" duration="1762000" />
     </task>
     <task id="LOCAL-00001" summary="first">
       <option name="closed" value="true" />
@@ -329,7 +322,23 @@
       <option name="project" value="LOCAL" />
       <updated>1744827930388</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="removed comments fixed titles and icons">
+      <option name="closed" value="true" />
+      <created>1744829981882</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1744829981882</updated>
+    </task>
+    <task id="LOCAL-00028" summary="removed comments fixed titles and icons">
+      <option name="closed" value="true" />
+      <created>1744829995066</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1744829995066</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -348,7 +357,8 @@
     <MESSAGE value="remove the comments bro" />
     <MESSAGE value="working" />
     <MESSAGE value="removed comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed comments" />
+    <MESSAGE value="removed comments fixed titles and icons" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed comments fixed titles and icons" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -77,11 +77,11 @@ def book_detail(request, book_id):
     headers={'Authorization':f'Token {token}'} if token else {}
     res=requests.get(f"{API_BASE_URL}/users/me", headers=headers)
     is_staff=res.json().get('role')=='staff' if res.ok else False
-    if request.method in ['POST', 'PUT']:
+    if request.method in ['POST']:
         method=request.POST.get('_method')
         review_id=request.POST.get('review_id')
         book_id=request.POST.get('book_id')  # Get book_id from the form data
-        rating=request.POST.get('rating')
+        rating=int(request.POST.get('rating'))
         comment=request.POST.get('comment')
         if method == 'DELETE':
             r=requests.delete(f'{API_BASE_URL}/books/{book_id}/reviews/{review_id}', headers=headers)
@@ -95,10 +95,10 @@ def book_detail(request, book_id):
                     return JsonResponse({'error': 'Failed to update review'}, status=500)
         else:
             if rating and comment:
-                review_payload = {'book': book_id, 'user': request.user.id, 'rating': rating, 'comment': comment}
+                review_payload = {'book': book_id, 'rating': rating, 'comment': comment}
                 review_response = requests.post(f'{API_BASE_URL}/books/{book_id}/reviews', json=review_payload, headers=headers)
                 if review_response.status_code != 201:
-                    return JsonResponse({'error':'Failed to submit review'}, status=500)
+                    return JsonResponse({'error':'Failed to submit review', 'payload': review_payload}, status=500)
         return redirect('library:book_detail', book_id=book_id)
     book_response = requests.get(f"{API_BASE_URL}/books/{book_id}", headers=headers)
     if book_response.status_code != 200:
