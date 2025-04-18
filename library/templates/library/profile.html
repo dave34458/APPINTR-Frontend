@@ -35,7 +35,7 @@
         {% for borrow in borrows %}
         <li class="flex justify-between items-center border border-gray-200 bg-white p-4 rounded-2xl shadow hover:shadow-xl transition-all duration-300">
           <span class="text-gray-700 font-semibold">{{ borrow.available_book.book.title }}: {{ borrow.available_book.location }}</span>
-          <span class="text-gray-600">{{ borrow.borrow_date }} to {% if date_returned %} {{ borrow.date_returned }}{% else %}Present{% endif %}</span>
+          <span class="text-gray-600">{{ borrow.borrow_date }} to {% if borrow.date_returned %} {{ borrow.date_returned }}{% else %}Present{% endif %}</span>
         </li>
         {% empty %}
         <li class="text-gray-500">No borrowed books found.</li>
