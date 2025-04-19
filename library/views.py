@@ -119,13 +119,11 @@ def book_detail(request, book_id):
 def profile(request):
     token = request.COOKIES.get('auth_token')
     headers = {'Authorization': f'Token {token}'} if token else {}
-    # Get user info
     res = requests.get(f"{API_BASE_URL}/users/me", headers=headers)
     if not res.ok:
         return JsonResponse({'error': 'Failed to fetch user info'}, status=500)
     user = res.json()
     is_staff = user.get('role') == 'staff'
-    # Get borrows and reviews
     borrows_res = requests.get(f"{API_BASE_URL}/borrows?user=me", headers=headers)
     borrows = borrows_res.json() if borrows_res.ok else []
     reviews_res = requests.get(f"{API_BASE_URL}/reviews?user=me", headers=headers)
