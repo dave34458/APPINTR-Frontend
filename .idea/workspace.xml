@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="final na version final na final">
+    <list default="true" id="8c9f21c4-d712-458e-a463-3770412cbcfa" name="Changes" comment="fixed borrows CRUD">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/book-detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/book-detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/library/borrows.html" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/library/borrows.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/library/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -116,7 +114,7 @@
       <workItem from="1744917081444" duration="2714000" />
       <workItem from="1745015730384" duration="551000" />
       <workItem from="1745072802262" duration="908000" />
-      <workItem from="1745075023542" duration="2171000" />
+      <workItem from="1745075023542" duration="7977000" />
     </task>
     <task id="LOCAL-00001" summary="first">
       <option name="closed" value="true" />
@@ -366,7 +364,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745074764832</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="fixed borrows CRUD">
+      <option name="closed" value="true" />
+      <created>1745077709339</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1745077709339</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -388,16 +394,12 @@
     <MESSAGE value="removed comments fixed titles and icons" />
     <MESSAGE value="inayos ko ung error na nahanap ko hanggang ipnapakita ko kay adrian" />
     <MESSAGE value="final na version final na final" />
-    <option name="LAST_COMMIT_MESSAGE" value="final na version final na final" />
+    <MESSAGE value="fixed borrows CRUD" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed borrows CRUD" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/library/views.py</url>
-          <line>41</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="django-line">
           <url>file://$PROJECT_DIR$/library/templates/library/books.html</url>
           <option name="timeStamp" value="2" />

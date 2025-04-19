@@ -56,12 +56,12 @@ def all_books(request):
             reviews = reviews_res.json()
             if reviews:
                 total_rating = sum(review['rating'] for review in reviews)
-                book['average_rating'] = round(total_rating / len(reviews), 2)  # Round to 2 decimal places
+                book['average_rating'] = round(total_rating / len(reviews), 2)
             else:
                 book['average_rating'] = 0
         else:
             book['average_rating'] = 0
-        book['half_star_comparison'] = [star - 0.5 for star in range(1, 6)]  # For half-star logic
+        book['half_star_comparison'] = [star - 0.5 for star in range(1, 6)]
     range_of_stars = range(1, 6)
     return render(request, 'library/all-books.html', {
         'books': books,
@@ -80,7 +80,7 @@ def book_detail(request, book_id):
     if request.method in ['POST']:
         method=request.POST.get('_method')
         review_id=request.POST.get('review_id')
-        book_id=request.POST.get('book_id')  # Get book_id from the form data
+        book_id=request.POST.get('book_id')
         rating=int(request.POST.get('rating'))
         comment=request.POST.get('comment')
         if method == 'DELETE':
@@ -89,7 +89,7 @@ def book_detail(request, book_id):
                 return JsonResponse({'error':'Failed to delete review'}, status=500)
         elif method == 'PUT':
             if review_id:
-                review_payload = {'rating': rating, 'comment': comment} if rating and comment else {}
+                review_payload = {'book':book_id, 'rating': rating, 'comment': comment} if rating and comment else {}
                 r = requests.put(f'{API_BASE_URL}/books/{book_id}/reviews/{review_id}', json=review_payload, headers=headers)
                 if r.status_code != 200:
                     return JsonResponse({'error': 'Failed to update review'}, status=500)
@@ -266,7 +266,6 @@ def login(request):
         if response.status_code == 200:
             token = response.json().get('token')
             if token:
-                # Store token in cookies
                 response = redirect('library:index')
                 response.set_cookie('auth_token', token, httponly=True, secure=True)
                 return response
@@ -290,7 +289,7 @@ def logout(request):
         return redirect('library:index')
 
     headers = {'Authorization': f'Token {token}'}
-    response = requests.delete(f"http://127.0.0.1:8000/api/auth/logout", headers=headers)
+    response = requests.delete(f"http://127.0.0.1:8000/api/auth/sessions", headers=headers)
     if response.status_code == 204:
         response = redirect('library:index')
         response.delete_cookie('auth_token')
