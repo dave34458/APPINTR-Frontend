@@ -148,16 +148,22 @@ def borrows(request):
         available_book_id=request.POST.get('available_book_id')
         borrow_id=request.POST.get('borrow_id')
         payload = {
+            'id': request.POST.get('borrow_id'),
             'user': request.POST.get('user'),
             'available_book': request.POST.get('available_book'),
             'return_date': request.POST.get('return_date'),
             'borrow_date': request.POST.get('borrow_date'),
-            'date_returned': request.POST.get('date_returned')
+            'date_returned': request.POST.get(f'date_returned_{borrow_id}') or request.POST.get(f'date_returned')
         }
         if method=='DELETE':
             r=requests.delete(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows/{borrow_id}',headers=headers)
         elif method=='PUT':
-            r=requests.put(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows/{borrow_id}',headers=headers,data=payload)
+            print(payload)
+            test = "test"
+            print(test)
+            r = requests.put(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows/{borrow_id}',
+                             headers=headers, data=payload)
+            print(payload)
         else:
             payload['borrow_date']=str(date.today())
             r=requests.post(f'{API_BASE_URL}/books/{book_id}/available-books/{available_book_id}/borrows',headers=headers,data=payload)

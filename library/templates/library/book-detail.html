@@ -35,7 +35,7 @@
                 {% for available_book in available_books %}
                 <li class="flex justify-between items-center border border-gray-200 bg-white p-4 rounded-2xl shadow hover:shadow-xl transition-all duration-300">
                     <span class="text-gray-700 font-semibold">{{ available_book.location }}</span>
-                    <span class="text-green-600 font-semibold">{{ available_book.copy_is_available|yesno:"Available,Not Available" }}</span>
+                    <span class="font-semibold {% if not available_book.copy_is_available %}text-red-600{% else %}text-green-600{% endif %}">{{ available_book.copy_is_available|yesno:"Available,Not Available" }}</span>
                 </li>
                 {% empty %}
                 <li class="text-gray-500">No available books found.</li>

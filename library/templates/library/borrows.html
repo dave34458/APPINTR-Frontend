@@ -259,9 +259,9 @@ select option{transition:background-color .3s ease}
                 <input type="hidden" name="available_book" value="{{ borrow.available_book.id }}">
                 <input type="hidden" name="borrow_date" value="{{ borrow.borrow_date }}">
                 <input type="hidden" name="return_date" value="{{ borrow.return_date }}">
-                <input type="hidden" name="date_returned" value="" id="date_returned">
-                <script>document.getElementById('date_returned').value = new Date().toISOString().split('T')[0];</script>
-                <button class="button" type="submit">Return</button>
+                  <input type="hidden" name="date_returned_{{ borrow.id }}" id="date_returned_{{ borrow.id }}">
+                  <script>document.getElementById('date_returned_{{ borrow.id }}').value = new Date().toISOString().split('T')[0];</script>
+                  <button class="button" type="submit">Return</button>
               </form>
             {% endif %}
           </td>
