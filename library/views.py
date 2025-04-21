@@ -278,9 +278,13 @@ def login(request):
 def register(request):
     if request.method == 'POST':
         username, email, password = request.POST['username'], request.POST['email'], request.POST['password']
-        r = requests.post(f"{API_BASE_URL}/auth/users", data={'username': username, 'email': email, 'password': password})
-        if r.status_code == 201: return login(request)
-        return render(request, 'library/login.html', {'error': 'Registration failed'})
+        confirm_password = request.POST['confirm_password']
+        if password != confirm_password:
+            return render(request, 'library/login.html', {'error': 'Passwords do not match'})
+        else:
+            r = requests.post(f"{API_BASE_URL}/auth/users", data={'username': username, 'email': email, 'password': password})
+            if r.status_code == 201: return login(request)
+            return render(request, 'library/login.html', {'error': 'Registration failed'})
 
 
 def logout(request):
